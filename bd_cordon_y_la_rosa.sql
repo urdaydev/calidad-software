@@ -1,0 +1,884 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 01-12-2023 a las 22:49:08
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.2.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bd_cordon_y_la_rosa`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `boleta`
+--
+
+CREATE TABLE `boleta` (
+  `id_boleta` int(11) NOT NULL,
+  `id_venta` int(11) NOT NULL,
+  `fecha_emision` datetime NOT NULL DEFAULT current_timestamp(),
+  `n_boleta` varchar(50) NOT NULL,
+  `serie` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categoria`
+--
+
+CREATE TABLE `categoria` (
+  `id_categoria` int(11) NOT NULL,
+  `nom_categoria` varchar(50) NOT NULL,
+  `descripcion` varchar(250) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `categoria`
+--
+
+INSERT INTO `categoria` (`id_categoria`, `nom_categoria`, `descripcion`, `estado`) VALUES
+(6, ' Bebidas y Refrescos', 'Ofrece una variedad de bebidas, desde agua embotellada y jugos hasta refrescos y bebidas energéticas.', 0x31),
+(7, 'Snacks y Golosinas', 'Contiene una variedad de snacks, chocolates, galletas y productos para satisfacer antojos rápidos. ', 0x31),
+(8, 'Productos de Panadería', 'Incluye pan fresco, pasteles, galletas y otros productos de panadería. ', 0x30),
+(9, 'Frutas y verduras', 'Productos frescos como frutas y verduras', 0x30),
+(10, 'Productos Lacteos', 'Ofrece leche, queso, yogurt y mantequila. ', 0x31),
+(11, 'Artículos de Cuidado Personal', 'Ofrece productos de higiene personal, como champús, jabones, cremas y productos de cuidado facial.', 0x30),
+(12, ' Artículos de Limpieza', 'Incluye oroductos de limpieza especializados como detergente, lavajias, Lejias, Guantes, Limpia vidrios, Escoba, Recojedor y trapeador.. ', 0x31),
+(13, 'Artículos de Papelería', 'Una variedad de productos de papelería, desde bolígrafos y cuadernos hasta suministros de oficina básicos', 0x31),
+(14, 'Electrónicos y Accesorios', 'Ofrecemos pequeños electrodomésticos, cargadores, baterías y otros', 0x31),
+(15, 'Productos para Mascotas', 'Alimentos, juguetes, accesorios y productos para el cuidado de mascotas,', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cliente`
+--
+
+CREATE TABLE `cliente` (
+  `id_cliente` int(11) NOT NULL,
+  `id_persona` int(11) DEFAULT NULL,
+  `id_empresa` int(11) DEFAULT NULL,
+  `fecha_registro` date DEFAULT curdate(),
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`id_cliente`, `id_persona`, `id_empresa`, `fecha_registro`, `estado`) VALUES
+(1, 2, NULL, '2023-11-24', 0x31),
+(2, 5, NULL, '2023-11-24', 0x31),
+(3, 6, NULL, '2023-11-24', 0x30),
+(4, 7, NULL, '2023-11-24', 0x31),
+(5, 8, NULL, '2023-11-24', 0x31),
+(6, 9, NULL, '2023-11-24', 0x31),
+(7, 10, NULL, '2023-12-01', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `compra`
+--
+
+CREATE TABLE `compra` (
+  `id_compra` int(11) NOT NULL,
+  `id_proveedor` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_metodo_pago` int(11) NOT NULL,
+  `fecha_compra` datetime NOT NULL,
+  `monto_total` decimal(6,2) NOT NULL,
+  `dscto` decimal(6,2) NOT NULL,
+  `dscto_total` decimal(6,2) NOT NULL,
+  `subtotal` decimal(6,2) NOT NULL,
+  `total_pagar` decimal(6,2) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `departamento`
+--
+
+CREATE TABLE `departamento` (
+  `id_departamento` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detallecompra`
+--
+
+CREATE TABLE `detallecompra` (
+  `id_detalle_compra` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  `id_compra` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `precio_total` decimal(6,2) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalleventa`
+--
+
+CREATE TABLE `detalleventa` (
+  `id_detalle_venta` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `precio_total` decimal(6,2) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `distrito`
+--
+
+CREATE TABLE `distrito` (
+  `id_distrito` int(11) NOT NULL,
+  `id_provincia` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `empresa`
+--
+
+CREATE TABLE `empresa` (
+  `id_empresa` int(11) NOT NULL,
+  `id_distrito` int(11) DEFAULT NULL,
+  `n_ruc` varchar(11) NOT NULL,
+  `razon_social` varchar(250) NOT NULL,
+  `n_telefono` varchar(12) DEFAULT 'sin telefono',
+  `email` varchar(50) DEFAULT 'sin email',
+  `direccion` varchar(50) DEFAULT 'sin direccion',
+  `fecha_registro` date DEFAULT curdate(),
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `empresa`
+--
+
+INSERT INTO `empresa` (`id_empresa`, `id_distrito`, `n_ruc`, `razon_social`, `n_telefono`, `email`, `direccion`, `fecha_registro`, `estado`) VALUES
+(3, NULL, '20447750859', 'PRODUCTOS Y SERVICIOS INDUSTRIALES ALPAMAYO SAC', '923253210', 'alpamayo@gmail.com.pe', 'MZA. H LOTE. 2 URB. AZIRUNI II ETAPA PUNO PUNO PUN', '2023-11-24', 0x31),
+(5, NULL, '20447612543', 'DISTRIBUIDORA DTODO SOCIEDAD ANONIMA CERRADA', '920250211', 'dtodo@gmail.com.pe', 'JR. CAHUIDE NRO. 735 BAR. MANCO CAPAC PUNO SAN ROM', '2023-11-24', 0x31),
+(6, NULL, '20101420591', 'ARIES COMERCIAL S.A.C.', '929292921', 'aries@gmail.com', 'AV. ELMER FAUCETT NRO. 1814 URB. SAN JOSE CALLAO C', '2023-11-27', 0x31),
+(7, NULL, '20100617332', 'RINTI S A', '926906105', 'rinti@gmail.com', 'AV. NICOLAS AYLLON-C.CENTRAL KM. 17.5 FND. PARIACH', '2023-11-27', 0x31),
+(8, NULL, '20606838477', 'BLANQUI CUIDADO PERSONAL Y DEL HOGAR E.I.R.L.', '924606234', 'blanqui@gmail.com', 'AV. ELMER FAUCETT NRO. 169 INT. 309 URB. MARANGA E', '2023-11-27', 0x31),
+(9, NULL, '20333541778', 'LIBRERIA PAPELERIA E IMPRESIONES SUR PACIFICO S.R.LTDA', '958859620', 'surpacifico@gmail.com', 'AV. EMILIO CAVENECIA NRO. 235 LIMA LIMA SAN ISIDRO', '2023-11-27', 0x31),
+(10, NULL, '20555533439', 'COMERCIAL ARTICULOS DE LIMPIEZA YAK S.A.C.', '912821356', 'yack@gmail.com', 'JR. JOSE ANTONIO ENCINAS NRO. 370 COO. LAS FLORES ', '2023-11-27', 0x31),
+(11, NULL, '20602267165', 'CUIDADO PERSONAL AURORAS E.I.R.L.', '922652132', 'auroras@gmail.com', 'CAL. 1 MZA. B LOTE. 13 URB. LAS PALMERAS DE VILLA ', '2023-11-27', 0x31),
+(12, NULL, '20516117649', 'DIGASEL S.A.C.', '913845622', 'digasel@gmail.com', 'CAL. SAN MARTIN NRO. 665 URB. ORBEA LIMA LIMA MAGD', '2023-11-27', 0x31),
+(13, NULL, '20100190797', 'LECHE GLORIA SOCIEDAD ANONIMA - GLORIA S.A.', '935623456', 'gloria@gmail.com', 'AV. REPUBLICA DE PANAMA NRO. 2461 URB. SANTA CATAL', '2023-11-27', 0x31),
+(14, NULL, '20297182456', 'SNACKS AMERICA LATINA S.R.L.', '956123399', 'america@gmail.com', 'AV. BOLOGNESI NRO. 550 LIMA LIMA SANTA ANITA', '2023-11-27', 0x31),
+(15, NULL, '20526893507', 'DISTRIBUIDORA DE GOLOSINAS Y ALIMENTOS SOCIEDAD ANONIMA CERRADA', '994567345', 'digo@gmail.com', '---- TAMBO OSCCOLLOPAMPA MZA. A LOTE. 1 CUSCO CUSC', '2023-11-27', 0x31),
+(16, NULL, '20604854084', '\"AGUA DEL CIELO E.I.R.L.\"', '968367062', 'cielo@gmail.com', 'PQ. 06 08 NRO. SN C.H. TALARA PIURA TALARA PARIÑAS', '2023-11-27', 0x31),
+(17, NULL, '20263322496', 'NESTLE PERU S A', '926896446', 'nestle@gmail.com', 'CAL. LUIS GALVANI NRO. 493 URB. LOTIZACION INDUSTR', '2023-11-27', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factura`
+--
+
+CREATE TABLE `factura` (
+  `id_factura` int(11) NOT NULL,
+  `id_venta` int(11) NOT NULL,
+  `fecha_emision` datetime NOT NULL DEFAULT current_timestamp(),
+  `n_factura` varchar(50) NOT NULL,
+  `serie` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `facturacompra`
+--
+
+CREATE TABLE `facturacompra` (
+  `id_factura_compra` int(11) NOT NULL,
+  `id_compra` int(11) NOT NULL,
+  `fecha_emision` datetime NOT NULL DEFAULT current_timestamp(),
+  `n_factura` varchar(50) NOT NULL,
+  `serie` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `marca`
+--
+
+CREATE TABLE `marca` (
+  `id_marca` int(11) NOT NULL,
+  `id_empresa` int(11) NOT NULL,
+  `nom_marca` varchar(50) NOT NULL,
+  `descripcion` varchar(250) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `metodopago`
+--
+
+CREATE TABLE `metodopago` (
+  `id_metodo_pago` int(11) NOT NULL,
+  `nom_metodo_pago` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `persona`
+--
+
+CREATE TABLE `persona` (
+  `id_persona` int(11) NOT NULL,
+  `id_distrito` int(11) DEFAULT NULL,
+  `dni` varchar(10) NOT NULL,
+  `nombres` varchar(50) NOT NULL,
+  `a_paterno` varchar(50) NOT NULL,
+  `a_materno` varchar(50) NOT NULL,
+  `f_nacimiento` date DEFAULT NULL,
+  `genero` char(1) DEFAULT NULL CHECK (`genero` in ('M','F')),
+  `direccion` varchar(50) DEFAULT 'sin direccion',
+  `n_telefono` varchar(12) DEFAULT 'sin telefono',
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `persona`
+--
+
+INSERT INTO `persona` (`id_persona`, `id_distrito`, `dni`, `nombres`, `a_paterno`, `a_materno`, `f_nacimiento`, `genero`, `direccion`, `n_telefono`, `estado`) VALUES
+(2, NULL, '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'AV. PRIMAVERA 123', '923253218', 0x31),
+(4, NULL, '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(5, NULL, '72559610', 'MASHELY', 'PICKMAN', 'GUTIERREZ', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(6, NULL, '70559620', 'EVELYN YADIRA', 'SULCA', 'ROCA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(7, NULL, '27427864', 'JOSE PEDRO', 'CASTILLO', 'TERRONES', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(8, NULL, '49046204', 'GIANLUCA', 'LAPADULA', 'VARGAS', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(9, NULL, '00212241', 'ARTURO', 'MERINO', 'DE LAMA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(10, NULL, '49086261', 'OLIVER', 'SONNE', 'CHRISTENSEN', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(11, NULL, '61685209', 'MARCO ANTONIO', 'CHUMBES', 'ESPINOZA', NULL, NULL, 'AV. LIBERTAD 123', '929292929', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `producto`
+--
+
+CREATE TABLE `producto` (
+  `id_producto` int(11) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
+  `id_proveedor` int(11) DEFAULT NULL,
+  `id_marca` int(11) DEFAULT NULL,
+  `nom_producto` varchar(50) NOT NULL,
+  `imagen` varchar(250) NOT NULL,
+  `descripcion` varchar(250) NOT NULL,
+  `precio` decimal(6,2) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `producto`
+--
+
+INSERT INTO `producto` (`id_producto`, `id_categoria`, `id_proveedor`, `id_marca`, `nom_producto`, `imagen`, `descripcion`, `precio`, `stock`, `fecha_registro`, `estado`) VALUES
+(13, 6, 9, NULL, 'Inka Kola', 'images/productos/13.jpg', 'Gaseosa Inca Kola 600 ml', 3.00, 30, '2023-11-27 17:02:53', 0x31),
+(14, 6, 9, NULL, 'Coca cola', 'images/productos/14.jpg', 'Gaseosa Coca Cola 600 ml', 3.00, 30, '2023-11-27 17:10:35', 0x31),
+(15, 6, 9, NULL, 'Fanta', 'images/productos/15.jpg', 'Gaseosa de 500 ml', 2.00, 30, '2023-11-27 17:13:52', 0x31),
+(16, 6, 9, NULL, 'Agua Cielo', 'images/productos/16.jpg', 'Botella de 1LT', 3.00, 30, '2023-11-27 17:21:03', 0x31),
+(17, 6, 9, NULL, 'Frugos Valle', 'images/productos/17.jpg', 'Durazno caja 1.5 LT', 6.50, 30, '2023-11-27 17:35:04', 0x31),
+(18, 6, 9, NULL, 'Pulp', 'images/productos/18.jpg', 'Jugo de durazno 1LT', 4.00, 30, '2023-11-27 17:38:41', 0x31),
+(19, 6, 9, NULL, 'Cifrut', 'images/productos/19.jpg', 'Refresco sabor naranja 3LT', 6.50, 30, '2023-11-27 17:41:56', 0x31),
+(20, 7, 11, NULL, 'Lays', 'images/productos/20.jpg', 'Papitas Lays', 2.00, 30, '2023-11-27 17:47:20', 0x31),
+(21, 7, 11, NULL, 'Doritos', 'images/productos/21.jpg', 'Tortilla de maiz 45g', 2.00, 30, '2023-11-27 17:51:38', 0x31),
+(22, 7, 11, NULL, 'Cuates', 'images/productos/22.jpg', 'Cuates picante sabor maiz 69g', 1.00, 30, '2023-11-27 17:53:32', 0x31),
+(23, 7, 11, NULL, 'Chisitos', 'images/productos/23.jpg', 'Sabor a queso 190g', 1.50, 30, '2023-11-27 17:56:39', 0x31),
+(24, 7, 14, NULL, 'Sublime', 'images/productos/24.jpg', 'Sabor a chocolate 30g', 2.00, 30, '2023-11-27 18:03:50', 0x31),
+(25, 7, 2, NULL, 'Gomitas', 'images/productos/25.jpg', 'sabores surtidos 90G', 3.00, 30, '2023-11-30 18:08:31', 0x31),
+(26, 7, 1, NULL, 'Trululu', 'images/productos/26.jpg', 'Masmelos unicornio 250g', 7.00, 30, '2023-11-30 18:13:48', 0x31),
+(27, 7, 1, NULL, 'OREO', 'images/productos/27.jpg', 'Galletas sabor chocolate 108g', 2.50, 30, '2023-11-30 18:18:47', 0x31),
+(28, 10, 10, NULL, 'Gloria', 'images/productos/28.jpg', 'Leche azul 395g', 4.20, 30, '2023-11-30 18:26:13', 0x31),
+(29, 10, 10, NULL, 'Gloria leche evaporada', 'images/productos/29.jpg', 'Leche 400 g', 4.60, 30, '2023-11-30 18:30:43', 0x31),
+(30, 10, 10, NULL, 'Gloria sin lactosa', 'images/productos/30.jpg', 'Leche 400g', 5.00, 30, '2023-11-30 18:32:44', 0x31),
+(31, 10, 10, NULL, 'Mantequilla', 'images/productos/31.jpg', 'Mantequilla Gloria en pote de 390g', 16.00, 30, '2023-11-30 18:37:03', 0x31),
+(32, 10, 10, NULL, 'Yogurt Gloria', 'images/productos/32.jpg', 'Botella de 1L', 6.00, 30, '2023-11-30 18:39:11', 0x31),
+(33, 10, 10, NULL, 'Yogurt', 'images/productos/33.jpg', 'Sin lactosa sabor fresa 1L', 7.20, 30, '2023-11-30 21:01:23', 0x31),
+(34, 10, 10, NULL, 'Queso Mozzarella', 'images/productos/34.jpg', 'Bonle 250g', 12.90, 30, '2023-11-30 21:04:28', 0x31),
+(35, 12, 7, NULL, 'Lavavajilla ', 'images/productos/35.jpg', 'Ayudin lima limon liquido botella 1.2 L', 23.00, 30, '2023-11-30 21:24:42', 0x31),
+(36, 12, 7, NULL, 'Clorox', 'images/productos/36.jpg', 'Lejia para ropa blanca 324 ml', 1.50, 30, '2023-11-30 21:28:47', 0x31),
+(37, 12, 7, NULL, 'Scotch brite', 'images/productos/37.jpg', 'Guantes para cocina', 10.90, 30, '2023-11-30 21:32:42', 0x31),
+(38, 12, 7, NULL, 'Poet', 'images/productos/38.jpg', 'Limpiatodo aroma a flores 1L', 4.80, 30, '2023-11-30 21:35:46', 0x31),
+(39, 12, 7, NULL, 'Bolivar ', 'images/productos/39.jpg', 'Detergente 330g', 6.60, 30, '2023-11-30 21:37:51', 0x31),
+(40, 10, 7, NULL, 'Jabon Liquido', 'images/productos/40.jpg', 'Antibacterial frutos rojos 380 ml', 7.50, 30, '2023-11-30 21:41:47', 0x31),
+(41, 15, 4, NULL, 'Pate', 'images/productos/41.jpg', 'Ricocat sabor higado y pollo 330g', 5.50, 30, '2023-12-01 14:28:47', 0x31),
+(42, 15, 4, NULL, 'Ricocat', 'images/productos/42.jpg', 'Comida para gato 3k', 39.50, 30, '2023-12-01 14:31:00', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedor`
+--
+
+CREATE TABLE `proveedor` (
+  `id_proveedor` int(11) NOT NULL,
+  `id_empresa` int(11) NOT NULL,
+  `fecha_registro` date NOT NULL DEFAULT curdate(),
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `proveedor`
+--
+
+INSERT INTO `proveedor` (`id_proveedor`, `id_empresa`, `fecha_registro`, `estado`) VALUES
+(1, 3, '2023-11-24', 0x31),
+(2, 5, '2023-11-24', 0x31),
+(3, 6, '2023-11-27', 0x30),
+(4, 7, '2023-11-27', 0x31),
+(5, 8, '2023-11-27', 0x31),
+(6, 9, '2023-11-27', 0x31),
+(7, 10, '2023-11-27', 0x31),
+(8, 11, '2023-11-27', 0x31),
+(9, 12, '2023-11-27', 0x31),
+(10, 13, '2023-11-27', 0x31),
+(11, 14, '2023-11-27', 0x31),
+(12, 15, '2023-11-27', 0x31),
+(13, 16, '2023-11-27', 0x31),
+(14, 17, '2023-11-27', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `provincia`
+--
+
+CREATE TABLE `provincia` (
+  `id_provincia` int(11) NOT NULL,
+  `id_departamento` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tienda`
+--
+
+CREATE TABLE `tienda` (
+  `id_tienda` int(11) NOT NULL,
+  `nom_tienda` varchar(100) NOT NULL,
+  `razon_social` varchar(250) NOT NULL,
+  `direccion` varchar(250) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tienda`
+--
+
+INSERT INTO `tienda` (`id_tienda`, `nom_tienda`, `razon_social`, `direccion`, `estado`) VALUES
+(2, 'EL CORDON Y LA ROSA MARKET', 'EL CORDON Y LA ROSA MARKET EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA', 'AV. SAN MARTIN NRO. 1040 URB. SAN ISIDRO ICA ICA ICA', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipoacceso`
+--
+
+CREATE TABLE `tipoacceso` (
+  `id_tipo_acceso` int(11) NOT NULL,
+  `nom_tipo_acceso` varchar(50) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipoacceso`
+--
+
+INSERT INTO `tipoacceso` (`id_tipo_acceso`, `nom_tipo_acceso`, `estado`) VALUES
+(1, 'Administrador', 0x31),
+(2, 'Vendedor', 0x31),
+(3, 'Almacenero', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuario`
+--
+
+CREATE TABLE `usuario` (
+  `id_usuario` int(11) NOT NULL,
+  `id_tipo_acceso` int(11) NOT NULL,
+  `id_persona` int(11) NOT NULL,
+  `usuario` varchar(250) NOT NULL,
+  `imagen` varchar(250) NOT NULL,
+  `contrasena` varchar(250) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id_usuario`, `id_tipo_acceso`, `id_persona`, `usuario`, `imagen`, `contrasena`, `estado`) VALUES
+(1, 1, 2, 'erik-jhonatan', 'images/usuarios/2.jpg', '$2y$10$Ifl3Ks7oYF095zIUXz8xnuKyni13Sr6/OZneu7vg8dHB.T3eqhSx2', 0x31),
+(3, 2, 11, 'marco.a', 'images/usuarios/11.jpg', '$2y$10$32oi/0mG52jRbfzVfJ66POt.Ini5R0Y.5MBpyAtGVskSg4AyRVKNO', 0x31);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `venta`
+--
+
+CREATE TABLE `venta` (
+  `id_venta` int(11) NOT NULL,
+  `id_cliente` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_metodo_pago` int(11) NOT NULL,
+  `fecha_venta` datetime NOT NULL,
+  `monto_total` decimal(6,2) NOT NULL,
+  `dscto` decimal(6,2) NOT NULL,
+  `dscto_total` decimal(6,2) NOT NULL,
+  `subtotal` decimal(6,2) NOT NULL,
+  `total_pagar` decimal(6,2) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `boleta`
+--
+ALTER TABLE `boleta`
+  ADD PRIMARY KEY (`id_boleta`),
+  ADD KEY `id_venta` (`id_venta`);
+
+--
+-- Indices de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  ADD PRIMARY KEY (`id_categoria`);
+
+--
+-- Indices de la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD PRIMARY KEY (`id_cliente`),
+  ADD KEY `id_persona` (`id_persona`),
+  ADD KEY `id_empresa` (`id_empresa`);
+
+--
+-- Indices de la tabla `compra`
+--
+ALTER TABLE `compra`
+  ADD PRIMARY KEY (`id_compra`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `id_metodo_pago` (`id_metodo_pago`);
+
+--
+-- Indices de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD PRIMARY KEY (`id_departamento`);
+
+--
+-- Indices de la tabla `detallecompra`
+--
+ALTER TABLE `detallecompra`
+  ADD PRIMARY KEY (`id_detalle_compra`),
+  ADD KEY `id_producto` (`id_producto`),
+  ADD KEY `id_compra` (`id_compra`);
+
+--
+-- Indices de la tabla `detalleventa`
+--
+ALTER TABLE `detalleventa`
+  ADD PRIMARY KEY (`id_detalle_venta`),
+  ADD KEY `id_producto` (`id_producto`);
+
+--
+-- Indices de la tabla `distrito`
+--
+ALTER TABLE `distrito`
+  ADD PRIMARY KEY (`id_distrito`),
+  ADD KEY `id_provincia` (`id_provincia`);
+
+--
+-- Indices de la tabla `empresa`
+--
+ALTER TABLE `empresa`
+  ADD PRIMARY KEY (`id_empresa`),
+  ADD KEY `id_distrito` (`id_distrito`);
+
+--
+-- Indices de la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD PRIMARY KEY (`id_factura`),
+  ADD KEY `id_venta` (`id_venta`);
+
+--
+-- Indices de la tabla `facturacompra`
+--
+ALTER TABLE `facturacompra`
+  ADD PRIMARY KEY (`id_factura_compra`),
+  ADD KEY `id_compra` (`id_compra`);
+
+--
+-- Indices de la tabla `marca`
+--
+ALTER TABLE `marca`
+  ADD PRIMARY KEY (`id_marca`),
+  ADD KEY `id_empresa` (`id_empresa`);
+
+--
+-- Indices de la tabla `metodopago`
+--
+ALTER TABLE `metodopago`
+  ADD PRIMARY KEY (`id_metodo_pago`);
+
+--
+-- Indices de la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD PRIMARY KEY (`id_persona`),
+  ADD KEY `id_distrito` (`id_distrito`);
+
+--
+-- Indices de la tabla `producto`
+--
+ALTER TABLE `producto`
+  ADD PRIMARY KEY (`id_producto`),
+  ADD KEY `id_categoria` (`id_categoria`),
+  ADD KEY `id_proveedor` (`id_proveedor`),
+  ADD KEY `id_marca` (`id_marca`);
+
+--
+-- Indices de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  ADD PRIMARY KEY (`id_proveedor`),
+  ADD KEY `id_empresa` (`id_empresa`);
+
+--
+-- Indices de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  ADD PRIMARY KEY (`id_provincia`),
+  ADD KEY `id_departamento` (`id_departamento`);
+
+--
+-- Indices de la tabla `tienda`
+--
+ALTER TABLE `tienda`
+  ADD PRIMARY KEY (`id_tienda`);
+
+--
+-- Indices de la tabla `tipoacceso`
+--
+ALTER TABLE `tipoacceso`
+  ADD PRIMARY KEY (`id_tipo_acceso`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD UNIQUE KEY `usuario` (`usuario`),
+  ADD KEY `id_tipo_acceso` (`id_tipo_acceso`),
+  ADD KEY `id_persona` (`id_persona`);
+
+--
+-- Indices de la tabla `venta`
+--
+ALTER TABLE `venta`
+  ADD PRIMARY KEY (`id_venta`),
+  ADD KEY `id_cliente` (`id_cliente`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `id_metodo_pago` (`id_metodo_pago`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `boleta`
+--
+ALTER TABLE `boleta`
+  MODIFY `id_boleta` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `compra`
+--
+ALTER TABLE `compra`
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  MODIFY `id_departamento` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `detallecompra`
+--
+ALTER TABLE `detallecompra`
+  MODIFY `id_detalle_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `detalleventa`
+--
+ALTER TABLE `detalleventa`
+  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `distrito`
+--
+ALTER TABLE `distrito`
+  MODIFY `id_distrito` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `empresa`
+--
+ALTER TABLE `empresa`
+  MODIFY `id_empresa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT de la tabla `factura`
+--
+ALTER TABLE `factura`
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `facturacompra`
+--
+ALTER TABLE `facturacompra`
+  MODIFY `id_factura_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `marca`
+--
+ALTER TABLE `marca`
+  MODIFY `id_marca` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `metodopago`
+--
+ALTER TABLE `metodopago`
+  MODIFY `id_metodo_pago` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `persona`
+--
+ALTER TABLE `persona`
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `producto`
+--
+ALTER TABLE `producto`
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- AUTO_INCREMENT de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  MODIFY `id_provincia` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tienda`
+--
+ALTER TABLE `tienda`
+  MODIFY `id_tienda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `tipoacceso`
+--
+ALTER TABLE `tipoacceso`
+  MODIFY `id_tipo_acceso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `venta`
+--
+ALTER TABLE `venta`
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `boleta`
+--
+ALTER TABLE `boleta`
+  ADD CONSTRAINT `boleta_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`);
+
+--
+-- Filtros para la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`),
+  ADD CONSTRAINT `cliente_ibfk_2` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
+
+--
+-- Filtros para la tabla `compra`
+--
+ALTER TABLE `compra`
+  ADD CONSTRAINT `compra_ibfk_1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`),
+  ADD CONSTRAINT `compra_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),
+  ADD CONSTRAINT `compra_ibfk_3` FOREIGN KEY (`id_metodo_pago`) REFERENCES `metodopago` (`id_metodo_pago`);
+
+--
+-- Filtros para la tabla `detallecompra`
+--
+ALTER TABLE `detallecompra`
+  ADD CONSTRAINT `detallecompra_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),
+  ADD CONSTRAINT `detallecompra_ibfk_2` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`);
+
+--
+-- Filtros para la tabla `detalleventa`
+--
+ALTER TABLE `detalleventa`
+  ADD CONSTRAINT `detalleventa_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`);
+
+--
+-- Filtros para la tabla `distrito`
+--
+ALTER TABLE `distrito`
+  ADD CONSTRAINT `distrito_ibfk_1` FOREIGN KEY (`id_provincia`) REFERENCES `provincia` (`id_provincia`);
+
+--
+-- Filtros para la tabla `empresa`
+--
+ALTER TABLE `empresa`
+  ADD CONSTRAINT `empresa_ibfk_1` FOREIGN KEY (`id_distrito`) REFERENCES `distrito` (`id_distrito`);
+
+--
+-- Filtros para la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`);
+
+--
+-- Filtros para la tabla `facturacompra`
+--
+ALTER TABLE `facturacompra`
+  ADD CONSTRAINT `facturacompra_ibfk_1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`);
+
+--
+-- Filtros para la tabla `marca`
+--
+ALTER TABLE `marca`
+  ADD CONSTRAINT `marca_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
+
+--
+-- Filtros para la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD CONSTRAINT `persona_ibfk_1` FOREIGN KEY (`id_distrito`) REFERENCES `distrito` (`id_distrito`);
+
+--
+-- Filtros para la tabla `producto`
+--
+ALTER TABLE `producto`
+  ADD CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`),
+  ADD CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`),
+  ADD CONSTRAINT `producto_ibfk_3` FOREIGN KEY (`id_marca`) REFERENCES `marca` (`id_marca`);
+
+--
+-- Filtros para la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  ADD CONSTRAINT `proveedor_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
+
+--
+-- Filtros para la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  ADD CONSTRAINT `provincia_ibfk_1` FOREIGN KEY (`id_departamento`) REFERENCES `departamento` (`id_departamento`);
+
+--
+-- Filtros para la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_tipo_acceso`) REFERENCES `tipoacceso` (`id_tipo_acceso`),
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`);
+
+--
+-- Filtros para la tabla `venta`
+--
+ALTER TABLE `venta`
+  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
+  ADD CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),
+  ADD CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_metodo_pago`) REFERENCES `metodopago` (`id_metodo_pago`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

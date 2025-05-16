@@ -1,0 +1,4 @@
+PARA EJECUTAR ESTE ARCHIVO SE RECOMIENDA ESTA VERSIÓN DE PHP -> 8.0.30
+se necesita una base de datos llamada bd_cordon_y_la_rosa
+USUARIO: erik-jhonatan
+ADMIN: admin

@@ -1,0 +1,411 @@
+/*
+Estilos globales
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/*
+Variables de estilo
+*/
+:root {
+    --primary-color: #232DB8;
+    --secondary-color: #1B80C4;
+    --tertiary-color: #6C1BC4;
+    --blue-light: #411DCF;
+    --white: #ECF0F3;
+    --white-container: #E3E6EC;
+    --black: #313131;
+    --red: #F05959;
+    --green: #54D151;
+    --neomorfismo: #D1D9E6;
+    --box-shadow: 6px 6px 15px rgba(255, 255, 255, 0.25), 6px 6px 15px #D1D9E6;;
+    --inner-shadow: inset 0px 4px 6px #D1D9E6, inset -6px -3px 5px rgba(255, 255, 255, 0.25);
+    --box-shadow-hover: 6px 6px 15px rgba(255, 255, 255, 0.25), 6px 6px 15px #D1D9E6;
+    --box-shadow-dark: 0 0 10px 0 rgba(255, 255, 255, 0.3);
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--neomorfismo);
+    width: 100%;
+    min-height: 100vh;
+    max-height: auto;
+    font-family: 'Roboto', sans-serif;
+}
+.loading-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background-color: var(--black);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+.loading-page span {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    filter: hue-rotate(0deg);
+  }
+.loading-page .container {
+    position: absolute;
+
+    height: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+.fade-out {
+    animation: fade-out 1s ease-in-out forwards;
+  }
+@keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+  
+    100% {
+      opacity: 0;
+    }
+  }
+.loading-page .container .item {
+    position: absolute;
+    background-color: transparent;
+    width: calc(var(--i) * 2.5vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: .9vmin solid rgb(0, 200, 255);
+    transform-style: preserve-3d;
+    transform: rotateX(70deg) translateZ(50px);
+    animation: my-move 3s ease-in-out calc(var(--i) * 0.08s) infinite;
+    box-shadow: 0px 0px 15px rgb(124, 124, 124),
+      inset 0px 0px 15px rgb(124, 124, 124);
+  }
+  
+  @keyframes my-move {
+    0%,
+    100% {
+      transform: rotateX(70deg) translateZ(50px) translateY(0px);
+      filter: hue-rotate(0deg);
+    }
+  
+    50% {
+      transform: rotateX(70deg) translateZ(50px) translateY(-50vmin);
+      filter: hue-rotate(180deg);
+    }
+  }
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 38px;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--white);
+    box-shadow: var(--box-shadow);
+    max-width: 470px;
+    min-width: 320px;
+    margin: 24px;
+    border-radius: 32px;
+    color: var(--black);
+}
+.card-logo{
+    background-image: url('../icons/logo-minimarket.svg');
+    background-repeat: no-repeat;
+    background-size: 90px;
+    background-position: center;
+    width: 135px;
+    height: 135px;
+    background-color: var(--white);
+    box-shadow: var(--inner-shadow);
+    border-radius: 50%;
+}
+.card-title {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 16px;
+}
+.card-description {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+.card-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.form-input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-container_username, .input-container_password {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*Input neomorfista*/ 
+.input-container_username input, .input-container_password input {
+    justify-self: center;
+    font-weight: 300;
+    background-color: var(--white);
+    border: none;
+    padding: 1rem;
+    font-size: 14px;
+    width: 208px;
+    border-radius: 1rem;
+    color: var(--black);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 1rem;
+    padding-left: 42px;
+    z-index: 2;
+}
+.input-container_username input:focus, .input-container_password input:focus {
+    outline-color: var(--tertiary-color);
+}
+
+.input-icon_username {
+    background-image: url('../icons/username.svg');
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: -41px;
+    margin-top: -18px;
+    z-index: 3;
+}
+.input-icon_password {
+    background-image: url('../icons/password.svg');
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: -41px;
+    margin-top: -18px;
+    z-index: 3;
+}
+
+.form-button_login {
+    width: 9em;
+    height: 3em;
+    color: var(--primary-color);
+    border-radius: 30em;
+    font-size: 16px;
+    font-family: inherit;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-shadow: var(--box-shadow);
+    background-color: var(--white);
+    margin-bottom: 12px;
+   }
+   
+.form-button_login::before {
+    content: '';
+    width: 0;
+    height: 3em;
+    border-radius: 30em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: linear-gradient(to right, var(--tertiary-color) 0%, var(--secondary-color) 100%);
+    transition: .5s ease;
+    display: block;
+    z-index: -1;
+   }
+   
+.form-button_login:hover::before {
+    width: 9em;
+    color: var(--white);
+   }
+.form-button_login:hover {
+    color: var(--white);
+    transition: .5s ease;
+    cursor: pointer;   
+}
+.form-button_login:focus {
+    outline: none;
+}
+.form-button_login:active {
+    color: var(--white);
+    transition: .5s ease;
+    cursor: pointer;
+}
+.form-links{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+}
+.form-links a {
+    text-decoration: none;
+    color: var(--black);
+    font-size: 14px;
+    font-weight: 300;
+    margin-bottom: 6px;
+}
+.form-links a:hover {
+    color: var(--tertiary-color);
+}
+.form-links a:focus {
+    outline: none;
+}
+
+/*Diseño del switch*/
+.container-switch{
+    position: relative;
+    align-self: flex-end;
+}
+.label-switch{
+    height: 30px;
+    width: 60px;
+    background-color: var(--white);
+    border-radius: 30px;
+    -webkit-box-shadow: inset 0 0 5px 4px rgba(255, 255, 255, 1),
+      inset 0 0 20px 1px rgba(0, 0, 0, 0.488), 10px 20px 30px rgba(0, 0, 0, 0.096),
+      inset 0 0 0 3px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 5px 4px rgba(255, 255, 255, 1),
+      inset 0 0 20px 1px rgba(0, 0, 0, 0.488), 10px 20px 30px rgba(0, 0, 0, 0.096),
+      inset 0 0 0 3px rgba(0, 0, 0, 0.3);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    -webkit-transition: -webkit-transform 0.4s;
+    transition: -webkit-transform 0.4s;
+    transition: transform 0.4s;
+  }
+  
+.label-switch:hover {
+    -webkit-transform: perspective(100px) rotateX(5deg) rotateY(-5deg);
+    transform: perspective(100px) rotateX(5deg) rotateY(-5deg);
+  }
+  
+.container-switch #checkbox:checked ~ .label-switch:hover {
+    -webkit-transform: perspective(100px) rotateX(-5deg) rotateY(5deg);
+    transform: perspective(100px) rotateX(-5deg) rotateY(5deg);
+  }
+  
+.container-switch #checkbox {
+    display: none;
+  }
+  
+.container-switch #checkbox:checked ~ .label-switch::before {
+    left: 35px;
+    background-color: #000000;
+    background-image: linear-gradient(315deg, #000000 0%, #414141 70%);
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+  
+.label-switch::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: #000000;
+    background-image: linear-gradient(
+      130deg,
+      #757272 10%,
+      #ffffff 11%,
+      #726f6f 62%
+    );
+    left: 10px;
+    -webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3), 10px 10px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.3), 10px 10px 10px rgba(0, 0, 0, 0.3);
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+  /*
+   Dark mode
+  */
+  .dark {
+    background-color: #000000;
+    background-image: linear-gradient(315deg, #000000 0%, var(--black) 70%);
+    color: var(--white);
+    transition: all 0.5s ease;
+  }
+  /*
+  Dark mode al card
+  */
+.dark .card {
+        background-color: #000000;
+        background-image: linear-gradient(315deg, #000000 0%, var(--black) 70%);
+        color: var(--white);
+        box-shadow: var(--box-shadow-dark);
+        /*Blur a la sombra*/
+        
+    }
+.dark .card .card-logo{
+    background: linear-gradient(315deg, #000000 0%, var(--black) 70%);
+    background-image: url('../icons/logo-minimarket.svg');
+    background-repeat: no-repeat;
+    background-size: 90px;
+    background-position: center;
+    width: 135px;
+    height: 135px;
+}
+.dark .form-links a {
+    color: var(--white);
+}
+.dark .form-links a:hover {
+    color: var(--tertiary-color);
+}
+.dark .input-container_username input, .dark .input-container_password input{
+    box-shadow: none;
+    transition: none;
+}
+/*Efecto de luces al button login y " box shadow de iluminación con el primary y tertyari color cuando el mouse este encima del botón"*/
+.dark .form-button_login{
+    background-color: #000000;
+    background-image: linear-gradient(315deg, #000000 0%, var(--black) 70%);
+    color: var(--white);
+    box-shadow: var(--box-shadow-dark);
+}
+.dark .form-button_login:hover{
+    box-shadow: 0px 0px 60px var(--tertiary-color);
+    border: none;
+}
+.dark .form-button_login:focus{
+    box-shadow: 0px 0px 60px var(--tertiary-color);
+    border: none;
+}
+.dark .form-button_login:active{
+    box-shadow: 0px 0px 60px var(--tertiary-color);
+    border: none;
+}
+
