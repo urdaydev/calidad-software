@@ -1,3 +1,10 @@
+// Función para calcular la fecha máxima (18 años atrás desde hoy)
+function getMaxDate() {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 18);
+  return today.toISOString().split("T")[0];
+}
+
 let btnEditModal = document.querySelectorAll(".btn-edit");
 const btn_update = document.querySelector("#btn-update");
 
@@ -6,16 +13,26 @@ btnEditModal.forEach((btn) => {
   btn.addEventListener("click", () => {
     const id = btn.parentElement.parentElement.firstElementChild.textContent;
     idClientUpdate = id;
-    console.log(id);
     fetch("../views/apis/cliente.php?id=" + id)
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        const { id_cliente, dni, nombres, a_paterno, a_materno, f_nacimiento } =
-          data;
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
 
-        const dniInput = document.querySelector(".modalUpdate #dni");
+        const {
+          id_cliente,
+          tipo_doc,
+          n_doc,
+          nombres,
+          a_paterno,
+          a_materno,
+          f_nacimiento,
+        } = data;
+
+        const tipoDocInput = document.querySelector(".modalUpdate #tipo_doc");
+        const nDocInput = document.querySelector(".modalUpdate #n_doc");
         const nombresInput = document.querySelector(".modalUpdate #nombres");
         const a_paternoInput = document.querySelector(
           ".modalUpdate #a_paterno"
@@ -27,23 +44,58 @@ btnEditModal.forEach((btn) => {
           ".modalUpdate #f_nacimiento"
         );
 
-        dniInput.value = dni || "";
+        // Establecer la fecha máxima
+        f_nacimientoInput.max = getMaxDate();
+
+        tipoDocInput.value = tipo_doc || "";
+        nDocInput.value = n_doc || "";
         nombresInput.value = nombres || "";
         a_paternoInput.value = a_paterno || "";
         a_maternoInput.value = a_materno || "";
         f_nacimientoInput.value = f_nacimiento || "";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
   });
 });
+
 // Enviar datos del formulario de actualizar
 btn_update.addEventListener("click", () => {
-  const dni = document.querySelector(".modalUpdate #dni").value;
+  const tipo_doc = document.querySelector(".modalUpdate #tipo_doc").value;
+  const n_doc = document.querySelector(".modalUpdate #n_doc").value;
   const nombres = document.querySelector(".modalUpdate #nombres").value;
   const a_paterno = document.querySelector(".modalUpdate #a_paterno").value;
   const a_materno = document.querySelector(".modalUpdate #a_materno").value;
   const f_nacimiento = document.querySelector(
     ".modalUpdate #f_nacimiento"
   ).value;
+
+  // Validar documento según tipo
+  const docClean = n_doc
+    .replace(/\s/g, "")
+    .replace(/\./g, "")
+    .replace(/\,/g, "");
+  if (tipo_doc === "DNI" && docClean.length !== 8) {
+    swal.fire({
+      title: "Error",
+      text: "El DNI debe tener 8 dígitos",
+      icon: "error",
+      showConfirmButton: true,
+    });
+    return;
+  } else if (
+    tipo_doc === "CE" &&
+    (docClean.length < 8 || docClean.length > 20)
+  ) {
+    swal.fire({
+      title: "Error",
+      text: "El CE debe tener entre 8 y 20 caracteres",
+      icon: "error",
+      showConfirmButton: true,
+    });
+    return;
+  }
 
   // Validar edad antes de enviar
   const hoy = new Date();
@@ -70,7 +122,8 @@ btn_update.addEventListener("click", () => {
 
   const data = {
     id_cliente: idClientUpdate,
-    dni: dni,
+    tipo_doc: tipo_doc,
+    n_doc: n_doc,
     nombres: nombres,
     a_paterno: a_paterno,
     a_materno: a_materno,
@@ -81,13 +134,8 @@ btn_update.addEventListener("click", () => {
     method: "PUT",
     body: JSON.stringify(data),
   })
-    .then((response) => {
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      // Si la respuesta es exitosa y se actualizan los datos
-      // al hacer click en aceptar se recarga la página
-
       if (data.success) {
         swal
           .fire({
@@ -99,17 +147,25 @@ btn_update.addEventListener("click", () => {
           .then((result) => {
             if (result.isConfirmed) {
               window.location.href = "../views/clientes.php";
-              console.log("Confirmado");
             }
           });
       } else if (data.error) {
         swal.fire({
           title: "Error",
-          text: "Los datos no se actualizaron correctamente",
+          text: data.error,
           icon: "error",
           button: "Aceptar",
         });
       }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      swal.fire({
+        title: "Error",
+        text: "Hubo un error al actualizar los datos",
+        icon: "error",
+        button: "Aceptar",
+      });
     });
 });
 
@@ -161,4 +217,17 @@ document
       });
       e.target.value = ""; // Limpiar el campo
     }
+  });
+
+// Limpiar solo el campo de documento al cambiar el tipo
+document
+  .querySelector(".modalCreate #tipo_doc")
+  .addEventListener("change", () => {
+    document.querySelector(".modalCreate #n_doc").value = "";
+  });
+
+document
+  .querySelector(".modalUpdate #tipo_doc")
+  .addEventListener("change", () => {
+    document.querySelector(".modalUpdate #n_doc").value = "";
   });

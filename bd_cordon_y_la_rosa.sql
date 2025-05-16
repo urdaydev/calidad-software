@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 -- Base de datos: `bd_cordon_y_la_rosa`
 --
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `boleta`
@@ -36,7 +36,7 @@ CREATE TABLE `boleta` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `categoria`
@@ -65,7 +65,7 @@ INSERT INTO `categoria` (`id_categoria`, `nom_categoria`, `descripcion`, `estado
 (14, 'Electrónicos y Accesorios', 'Ofrecemos pequeños electrodomésticos, cargadores, baterías y otros', 0x31),
 (15, 'Productos para Mascotas', 'Alimentos, juguetes, accesorios y productos para el cuidado de mascotas,', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `cliente`
@@ -75,7 +75,7 @@ CREATE TABLE `cliente` (
   `id_cliente` int(11) NOT NULL,
   `id_persona` int(11) DEFAULT NULL,
   `id_empresa` int(11) DEFAULT NULL,
-  `fecha_registro` date DEFAULT curdate(),
+  `fecha_registro` date DEFAULT (curdate()),
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -92,7 +92,7 @@ INSERT INTO `cliente` (`id_cliente`, `id_persona`, `id_empresa`, `fecha_registro
 (6, 9, NULL, '2023-11-24', 0x31),
 (7, 10, NULL, '2023-12-01', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `compra`
@@ -112,7 +112,7 @@ CREATE TABLE `compra` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `departamento`
@@ -124,7 +124,7 @@ CREATE TABLE `departamento` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `detallecompra`
@@ -139,7 +139,7 @@ CREATE TABLE `detallecompra` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `detalleventa`
@@ -153,7 +153,7 @@ CREATE TABLE `detalleventa` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `distrito`
@@ -166,7 +166,7 @@ CREATE TABLE `distrito` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `empresa`
@@ -180,7 +180,7 @@ CREATE TABLE `empresa` (
   `n_telefono` varchar(12) DEFAULT 'sin telefono',
   `email` varchar(50) DEFAULT 'sin email',
   `direccion` varchar(50) DEFAULT 'sin direccion',
-  `fecha_registro` date DEFAULT curdate(),
+  `fecha_registro` date DEFAULT (curdate()),
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -204,7 +204,7 @@ INSERT INTO `empresa` (`id_empresa`, `id_distrito`, `n_ruc`, `razon_social`, `n_
 (16, NULL, '20604854084', '\"AGUA DEL CIELO E.I.R.L.\"', '968367062', 'cielo@gmail.com', 'PQ. 06 08 NRO. SN C.H. TALARA PIURA TALARA PARIÑAS', '2023-11-27', 0x31),
 (17, NULL, '20263322496', 'NESTLE PERU S A', '926896446', 'nestle@gmail.com', 'CAL. LUIS GALVANI NRO. 493 URB. LOTIZACION INDUSTR', '2023-11-27', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `factura`
@@ -219,7 +219,7 @@ CREATE TABLE `factura` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `facturacompra`
@@ -234,7 +234,7 @@ CREATE TABLE `facturacompra` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `marca`
@@ -248,7 +248,7 @@ CREATE TABLE `marca` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `metodopago`
@@ -260,7 +260,7 @@ CREATE TABLE `metodopago` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `persona`
@@ -269,7 +269,8 @@ CREATE TABLE `metodopago` (
 CREATE TABLE `persona` (
   `id_persona` int(11) NOT NULL,
   `id_distrito` int(11) DEFAULT NULL,
-  `dni` varchar(10) NOT NULL,
+  `tipo_doc` varchar(3) NOT NULL DEFAULT 'DNI',
+  `n_doc` varchar(20) NOT NULL,
   `nombres` varchar(50) NOT NULL,
   `a_paterno` varchar(50) NOT NULL,
   `a_materno` varchar(50) NOT NULL,
@@ -284,18 +285,18 @@ CREATE TABLE `persona` (
 -- Volcado de datos para la tabla `persona`
 --
 
-INSERT INTO `persona` (`id_persona`, `id_distrito`, `dni`, `nombres`, `a_paterno`, `a_materno`, `f_nacimiento`, `genero`, `direccion`, `n_telefono`, `estado`) VALUES
-(2, NULL, '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'AV. PRIMAVERA 123', '923253218', 0x31),
-(4, NULL, '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(5, NULL, '72559610', 'MASHELY', 'PICKMAN', 'GUTIERREZ', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(6, NULL, '70559620', 'EVELYN YADIRA', 'SULCA', 'ROCA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(7, NULL, '27427864', 'JOSE PEDRO', 'CASTILLO', 'TERRONES', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(8, NULL, '49046204', 'GIANLUCA', 'LAPADULA', 'VARGAS', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(9, NULL, '00212241', 'ARTURO', 'MERINO', 'DE LAMA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(10, NULL, '49086261', 'OLIVER', 'SONNE', 'CHRISTENSEN', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
-(11, NULL, '61685209', 'MARCO ANTONIO', 'CHUMBES', 'ESPINOZA', NULL, NULL, 'AV. LIBERTAD 123', '929292929', 0x31);
+INSERT INTO `persona` (`id_persona`, `id_distrito`, `tipo_doc`, `n_doc`, `nombres`, `a_paterno`, `a_materno`, `f_nacimiento`, `genero`, `direccion`, `n_telefono`, `estado`) VALUES
+(2, NULL, 'DNI', '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'AV. PRIMAVERA 123', '923253218', 0x31),
+(4, NULL, 'DNI', '72559620', 'ERIK JHONATAN', 'MARCA', 'LOAYZA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(5, NULL, 'DNI', '72559610', 'MASHELY', 'PICKMAN', 'GUTIERREZ', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(6, NULL, 'DNI', '70559620', 'EVELYN YADIRA', 'SULCA', 'ROCA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(7, NULL, 'DNI', '27427864', 'JOSE PEDRO', 'CASTILLO', 'TERRONES', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(8, NULL, 'DNI', '49046204', 'GIANLUCA', 'LAPADULA', 'VARGAS', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(9, NULL, 'DNI', '00212241', 'ARTURO', 'MERINO', 'DE LAMA', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(10, NULL, 'DNI', '49086261', 'OLIVER', 'SONNE', 'CHRISTENSEN', NULL, NULL, 'sin direccion', 'sin telefono', 0x31),
+(11, NULL, 'DNI', '61685209', 'MARCO ANTONIO', 'CHUMBES', 'ESPINOZA', NULL, NULL, 'AV. LIBERTAD 123', '929292929', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `producto`
@@ -351,7 +352,7 @@ INSERT INTO `producto` (`id_producto`, `id_categoria`, `id_proveedor`, `id_marca
 (41, 15, 4, NULL, 'Pate', 'images/productos/41.jpg', 'Ricocat sabor higado y pollo 330g', 5.50, 30, '2023-12-01 14:28:47', 0x31),
 (42, 15, 4, NULL, 'Ricocat', 'images/productos/42.jpg', 'Comida para gato 3k', 39.50, 30, '2023-12-01 14:31:00', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `proveedor`
@@ -360,7 +361,7 @@ INSERT INTO `producto` (`id_producto`, `id_categoria`, `id_proveedor`, `id_marca
 CREATE TABLE `proveedor` (
   `id_proveedor` int(11) NOT NULL,
   `id_empresa` int(11) NOT NULL,
-  `fecha_registro` date NOT NULL DEFAULT curdate(),
+  `fecha_registro` date NOT NULL DEFAULT (curdate()),
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -384,7 +385,7 @@ INSERT INTO `proveedor` (`id_proveedor`, `id_empresa`, `fecha_registro`, `estado
 (13, 16, '2023-11-27', 0x31),
 (14, 17, '2023-11-27', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `provincia`
@@ -397,7 +398,7 @@ CREATE TABLE `provincia` (
   `estado` binary(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `tienda`
@@ -418,7 +419,7 @@ CREATE TABLE `tienda` (
 INSERT INTO `tienda` (`id_tienda`, `nom_tienda`, `razon_social`, `direccion`, `estado`) VALUES
 (2, 'EL CORDON Y LA ROSA MARKET', 'EL CORDON Y LA ROSA MARKET EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA', 'AV. SAN MARTIN NRO. 1040 URB. SAN ISIDRO ICA ICA ICA', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `tipoacceso`
@@ -439,7 +440,7 @@ INSERT INTO `tipoacceso` (`id_tipo_acceso`, `nom_tipo_acceso`, `estado`) VALUES
 (2, 'Vendedor', 0x31),
 (3, 'Almacenero', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `usuario`
@@ -463,7 +464,7 @@ INSERT INTO `usuario` (`id_usuario`, `id_tipo_acceso`, `id_persona`, `usuario`, 
 (1, 1, 2, 'erik-jhonatan', 'images/usuarios/2.jpg', '$2y$10$Ifl3Ks7oYF095zIUXz8xnuKyni13Sr6/OZneu7vg8dHB.T3eqhSx2', 0x31),
 (3, 2, 11, 'marco.a', 'images/usuarios/11.jpg', '$2y$10$32oi/0mG52jRbfzVfJ66POt.Ini5R0Y.5MBpyAtGVskSg4AyRVKNO', 0x31);
 
--- --------------------------------------------------------
+--
 
 --
 -- Estructura de tabla para la tabla `venta`
@@ -823,62 +824,4 @@ ALTER TABLE `empresa`
 -- Filtros para la tabla `factura`
 --
 ALTER TABLE `factura`
-  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`);
-
---
--- Filtros para la tabla `facturacompra`
---
-ALTER TABLE `facturacompra`
-  ADD CONSTRAINT `facturacompra_ibfk_1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`);
-
---
--- Filtros para la tabla `marca`
---
-ALTER TABLE `marca`
-  ADD CONSTRAINT `marca_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
-
---
--- Filtros para la tabla `persona`
---
-ALTER TABLE `persona`
-  ADD CONSTRAINT `persona_ibfk_1` FOREIGN KEY (`id_distrito`) REFERENCES `distrito` (`id_distrito`);
-
---
--- Filtros para la tabla `producto`
---
-ALTER TABLE `producto`
-  ADD CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`),
-  ADD CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`),
-  ADD CONSTRAINT `producto_ibfk_3` FOREIGN KEY (`id_marca`) REFERENCES `marca` (`id_marca`);
-
---
--- Filtros para la tabla `proveedor`
---
-ALTER TABLE `proveedor`
-  ADD CONSTRAINT `proveedor_ibfk_1` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id_empresa`);
-
---
--- Filtros para la tabla `provincia`
---
-ALTER TABLE `provincia`
-  ADD CONSTRAINT `provincia_ibfk_1` FOREIGN KEY (`id_departamento`) REFERENCES `departamento` (`id_departamento`);
-
---
--- Filtros para la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_tipo_acceso`) REFERENCES `tipoacceso` (`id_tipo_acceso`),
-  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`);
-
---
--- Filtros para la tabla `venta`
---
-ALTER TABLE `venta`
-  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
-  ADD CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),
-  ADD CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_metodo_pago`) REFERENCES `metodopago` (`id_metodo_pago`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`)

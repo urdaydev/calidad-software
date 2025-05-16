@@ -11,7 +11,7 @@ require_once("../config/db.php"); //Contiene las variables de configuracion para
 require_once("../config/conexion.php"); //Contiene funcion que conecta a la base de datos
 require_once("../utils/functions.php");
 // id_cliente, nombres, a_peterno, a_materno
-$sql = "SELECT cliente.id_cliente,persona.dni,persona.nombres, persona.a_paterno, persona.a_materno, cliente.estado FROM cliente inner join persona on cliente.id_persona = persona.id_persona where cliente.estado = 1";
+$sql = "SELECT cliente.id_cliente, persona.tipo_doc, persona.n_doc, persona.nombres, persona.a_paterno, persona.a_materno, cliente.estado FROM cliente inner join persona on cliente.id_persona = persona.id_persona where cliente.estado = 1";
 
 $query = mysqli_query($con, $sql);
 $id_usuario = $_SESSION['id_usuario'];
@@ -124,7 +124,8 @@ $items_nav = getItemsNav($items_nav, 'clientes');
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Dni</th>
+                <th>Tipo Doc.</th>
+                <th>N° Documento</th>
                 <th>Nombre</th>
                 <th>Apellido Paterno</th>
                 <th>Apellido Materno</th>
@@ -136,13 +137,13 @@ $items_nav = getItemsNav($items_nav, 'clientes');
               <?php while ($row = mysqli_fetch_array($query)): ?>
                 <tr>
                   <td><?= $row['id_cliente'] ?></td>
-                  <td><?= $row['dni'] ?></td>
+                  <td><?= $row['tipo_doc'] ?></td>
+                  <td><?= $row['n_doc'] ?></td>
                   <td><?= $row['nombres'] ?></td>
                   <td><?= $row['a_paterno'] ?></td>
                   <td><?= $row['a_materno'] ?></td>
                   <td><a class="cliente-update btn-edit">Editar</a></td>
-                  <td><a href="./delete/cliente.php?id=<?= $row['id_cliente'] ?>" class="cliente-delete">Eliminar
-                    </a></td>
+                  <td><a href="./delete/cliente.php?id=<?= $row['id_cliente'] ?>" class="cliente-delete">Eliminar</a></td>
                 </tr>
               <?php endwhile; ?>
             </tbody>
@@ -160,8 +161,15 @@ $items_nav = getItemsNav($items_nav, 'clientes');
         <div class="body">
           <form action="./create/cliente.php" method="POST" class="form">
             <div class="form-control">
-              <label for="">Dni</label>
-              <input type="text" placeholder="Dni del cliente" required name="dni" id="dni">
+              <label for="tipo_doc">Tipo de Documento</label>
+              <select name="tipo_doc" id="tipo_doc" required>
+                <option value="DNI">DNI</option>
+                <option value="CE">Carnet de Extranjería</option>
+              </select>
+            </div>
+            <div class="form-control">
+              <label for="n_doc">Número de Documento</label>
+              <input type="text" placeholder="Ingrese número de documento" required name="n_doc" id="n_doc">
             </div>
             <div class="form-control">
               <label for="">Nombres</label>
@@ -196,8 +204,15 @@ $items_nav = getItemsNav($items_nav, 'clientes');
         <div class="body">
           <form class="form">
             <div class="form-control">
-              <label for="">Dni</label>
-              <input type="text" placeholder="Dni del cliente" required name="dni" id="dni">
+              <label for="tipo_doc">Tipo de Documento</label>
+              <select name="tipo_doc" id="tipo_doc" required>
+                <option value="DNI">DNI</option>
+                <option value="CE">Carnet de Extranjería</option>
+              </select>
+            </div>
+            <div class="form-control">
+              <label for="n_doc">Número de Documento</label>
+              <input type="text" placeholder="Ingrese número de documento" required name="n_doc" id="n_doc">
             </div>
             <div class="form-control">
               <label for="">Nombres</label>
@@ -233,6 +248,23 @@ $items_nav = getItemsNav($items_nav, 'clientes');
 <script src="../modal-js/modal.js">
 </script>
 <script>
+  // Función para calcular la fecha máxima (18 años atrás desde hoy)
+  function getMaxDate() {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  }
+
+  // Establecer la fecha máxima en los inputs de fecha
+  document.addEventListener('DOMContentLoaded', function() {
+    const createDateInput = document.querySelector('.modalCreate #f_nacimiento');
+    const updateDateInput = document.querySelector('.modalUpdate #f_nacimiento');
+
+    const maxDate = getMaxDate();
+    createDateInput.max = maxDate;
+    updateDateInput.max = maxDate;
+  });
+
   // Alerts del servidor
   // categoria.php?error=emptyField"
   // categoria.php?error=exist"
@@ -325,48 +357,101 @@ $items_nav = getItemsNav($items_nav, 'clientes');
     // Aquí continuaría el código existente para la actualización
   });
 
-  const inputDniCreate = document.querySelector('.modalCreate #dni');
-  // change event
-  inputDniCreate.addEventListener('change', (e) => {
-    const dni = e.target.value;
-    const dniClean = cleanString(dni);
-    const token = 'token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1hc2FkZTk5NDVAaWJ0cmFkZXMuY29tIn0.HscnB_OWPfEVIzZuHOeMh4OUj4h92U6t46DpPUTutXY';
-    const apiUrl = `https://dniruc.apisperu.com/api/v1/dni/${dniClean}?${token}`;
-    if (dniClean.length === 8) {
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          const {
-            dni,
-            nombres,
-            apellidoPaterno,
-            apellidoMaterno
-          } = data;
-          document.querySelector('.modalCreate #nombres').value = nombres || '';
-          document.querySelector('.modalCreate #a_paterno').value = apellidoPaterno || '';
-          document.querySelector('.modalCreate #a_materno').value = apellidoMaterno || '';
-          // Si no existe el dni
-          if (!dni) {
-            Swal.fire({
-              icon: 'error',
-              title: 'DNI no encontrado',
-              showConfirmButton: false,
-              timer: 1500
+  const inputDniCreate = document.querySelector('.modalCreate #n_doc');
+  const tipoDocCreate = document.querySelector('.modalCreate #tipo_doc');
+  const inputDniUpdate = document.querySelector('.modalUpdate #n_doc');
+  const tipoDocUpdate = document.querySelector('.modalUpdate #tipo_doc');
+
+  // Función para validar documento
+  function validateDocument(value, type, isUpdate = false) {
+    const dniClean = cleanString(value);
+    const modalClass = isUpdate ? '.modalUpdate' : '.modalCreate';
+
+    if (type === 'DNI') {
+      if (dniClean.length === 8) {
+        if (!isUpdate) {
+          const token = 'token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1hc2FkZTk5NDVAaWJ0cmFkZXMuY29tIn0.HscnB_OWPfEVIzZuHOeMh4OUj4h92U6t46DpPUTutXY';
+          const apiUrl = `https://dniruc.apisperu.com/api/v1/dni/${dniClean}?${token}`;
+          fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+              const {
+                dni,
+                nombres,
+                apellidoPaterno,
+                apellidoMaterno
+              } = data;
+              document.querySelector(`${modalClass} #nombres`).value = nombres || '';
+              document.querySelector(`${modalClass} #a_paterno`).value = apellidoPaterno || '';
+              document.querySelector(`${modalClass} #a_materno`).value = apellidoMaterno || '';
+              // Si no existe el dni
+              if (!dni) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'DNI no encontrado',
+                  showConfirmButton: false,
+                  timer: 1500
+                })
+              }
             })
-          }
-        })
-        .catch(error => {
-          console.log(error);
+            .catch(error => {
+              console.log(error);
+            });
+        }
+        return true;
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'DNI inválido',
+          text: 'El DNI debe tener 8 dígitos',
+          showConfirmButton: false,
+          timer: 1500
         });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'DNI inválido',
-        showConfirmButton: false,
-        timer: 1500
-      })
+        return false;
+      }
+    } else if (type === 'CE') {
+      if (dniClean.length >= 8 && dniClean.length <= 20) {
+        return true;
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Carnet de Extranjería inválido',
+          text: 'El CE debe tener entre 8 y 20 caracteres',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        return false;
+      }
     }
-  });;
+  }
+
+  // Validación para el modal de crear
+  inputDniCreate.addEventListener('change', (e) => {
+    const value = e.target.value;
+    const type = tipoDocCreate.value;
+    validateDocument(value, type, false);
+  });
+
+  // Validación para el modal de editar
+  inputDniUpdate.addEventListener('change', (e) => {
+    const value = e.target.value;
+    const type = tipoDocUpdate.value;
+    validateDocument(value, type, true);
+  });
+
+  // Limpiar campos cuando se cambia el tipo de documento en crear
+  tipoDocCreate.addEventListener('change', () => {
+    document.querySelector('.modalCreate #n_doc').value = '';
+    document.querySelector('.modalCreate #nombres').value = '';
+    document.querySelector('.modalCreate #a_paterno').value = '';
+    document.querySelector('.modalCreate #a_materno').value = '';
+  });
+
+  // Limpiar campos cuando se cambia el tipo de documento en editar
+  tipoDocUpdate.addEventListener('change', () => {
+    document.querySelector('.modalUpdate #n_doc').value = '';
+  });
+
   // funcion para quitar los espacios en blanco, puntos y comas
   function cleanString(string) {
     string = string.replace(/\s/g, '');
