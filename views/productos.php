@@ -457,6 +457,9 @@ $items_nav = getItemsNav($items_nav, 'productos');
   }
 </script>
 <script src="../js/test.js"></script>
+<script type="module" src="../js/ventas.js"></script>
+<script src="../js/validation_dni.js"></script>
+<script src="../modal-js/delete-product-modal.js"></script>
 <script src="../modal-js/data_productos.js"></script>
 <script src="../js/search_rows.js"></script>
 
