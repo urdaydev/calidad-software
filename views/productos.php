@@ -32,6 +32,115 @@ $items_nav = getItemsNav($items_nav, 'productos');
   <link rel="stylesheet" href="../css/dashboard.css">
   <!----===== Boxicons CSS ===== -->
   <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    .stock-alert-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .stock-alert {
+      color: #dc3545;
+      font-weight: bold;
+      background-color: rgba(220, 53, 69, 0.1);
+      padding: 5px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .stock-alert::before {
+      content: "¡Alerta! Stock bajo el mínimo";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-2px);
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .stock-alert:hover::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .stock-alert i {
+      color: #dc3545;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Estilos para los botones */
+    .btn-edit,
+    .producto-delete {
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn-edit {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-1px);
+    }
+
+    .producto-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .producto-delete:hover {
+      background-color: #bb2d3b;
+      transform: translateY(-1px);
+    }
+
+    /* Centrado de contenido en celdas */
+    td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* Ajuste para la imagen */
+    td img {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 
 <body>
@@ -141,7 +250,16 @@ $items_nav = getItemsNav($items_nav, 'productos');
                   <td><?= $row['nom_producto'] ?></td>
                   <td><?= $row['descripcion'] ?></td>
                   <td><?= $row['precio'] ?></td>
-                  <td><?= $row['stock'] ?></td>
+                  <td>
+                    <div class="stock-alert-container">
+                      <div class="<?= $row['stock'] <= $row['stock_minimo'] ? 'stock-alert' : '' ?>">
+                        <?= $row['stock'] ?>
+                        <?php if ($row['stock'] <= $row['stock_minimo']): ?>
+                          <i class='bx bxs-error-circle' title="¡Alerta! Stock bajo el mínimo"></i>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </td>
                   <td><?= $row['stock_minimo'] ?></td>
                   <td><img src="<?= "../" . $row['imagen'] ?>" alt="" width="100px"></td>
                   <td>
@@ -150,8 +268,8 @@ $items_nav = getItemsNav($items_nav, 'productos');
                     </a>
                   </td>
                   <td>
-                    <a href="./delete/producto.php?id=<?= $row['id_producto'] ?>"
-                      class="producto-delete">Eliminar
+                    <a href="./delete/producto.php?id=<?= $row['id_producto'] ?>" class="producto-delete">
+                      Eliminar
                     </a>
                   </td>
                 </tr>
