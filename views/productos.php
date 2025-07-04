@@ -10,6 +10,11 @@ if (!isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] !=
 require_once("../config/db.php"); //Contiene las variables de configuracion para conectar a la base de datos
 require_once("../config/conexion.php"); //Contiene funcion que conecta a la base de datos
 require_once("../utils/functions.php");
+require_once("../classes/Subcategoria.php");
+
+$subcategoriaManager = new App\Classes\Subcategoria($con);
+$all_subcategorias = $subcategoriaManager->listarSubcategorias();
+
 $sql = " SELECT producto.id_producto, categoria.nom_categoria, producto.nom_producto, producto.descripcion, producto.precio, producto.stock, producto.stock_minimo, producto.imagen, producto.fecha_vencimiento FROM producto inner join categoria on producto.id_categoria = categoria.id_categoria WHERE producto.estado = 1 ORDER BY producto.id_producto DESC;";
 $query = mysqli_query($con, $sql);
 $id_usuario = $_SESSION['id_usuario'];
@@ -304,6 +309,7 @@ $items_nav = getItemsNav($items_nav, 'productos');
               <tr>
                 <th>ID</th>
                 <th>Categoria</th>
+                <th>Subcategorías</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
@@ -320,6 +326,18 @@ $items_nav = getItemsNav($items_nav, 'productos');
                 <tr>
                   <td><?= $row['id_producto'] ?></td>
                   <td><?= $row['nom_categoria'] ?></td>
+                  <td>
+                    <?php
+                    $product_subcategories = $subcategoriaManager->obtenerSubcategoriasDeProducto($row['id_producto']);
+                    if (!empty($product_subcategories)) {
+                      foreach ($product_subcategories as $sub) {
+                        echo '<span class="badge bg-info">' . htmlspecialchars($sub['valor']) . ' (' . htmlspecialchars($sub['nombre_tipo']) . ')</span> ';
+                      }
+                    } else {
+                      echo 'N/A';
+                    }
+                    ?>
+                  </td>
                   <td><?= $row['nom_producto'] ?></td>
                   <td><?= $row['descripcion'] ?></td>
                   <td><?= $row['precio'] ?></td>
@@ -396,6 +414,14 @@ $items_nav = getItemsNav($items_nav, 'productos');
               </select>
             </div>
             <div class="form-control">
+              <label for="subcategorias">Subcategorías</label>
+              <select name="subcategorias[]" id="subcategorias" class="form-control" multiple>
+                <?php foreach ($all_subcategorias as $sub): ?>
+                  <option value="<?= $sub['id_subcategoria'] ?>"><?= htmlspecialchars($sub['valor']) . ' (' . htmlspecialchars($sub['nombre_tipo']) . ')' ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="form-control">
               <label for="">Nombre</label>
               <input type="text" placeholder="Nombre del producto" required name="nombre" id="nombre">
             </div>
@@ -463,6 +489,14 @@ $items_nav = getItemsNav($items_nav, 'productos');
                   echo '<option value="' . $row['id_proveedor'] . '">' . $row['razon_social'] . '</option>';
                 }
                 ?>
+              </select>
+            </div>
+            <div class="form-control">
+              <label for="update_subcategorias">Subcategorías</label>
+              <select name="subcategorias[]" id="update_subcategorias" class="form-control" multiple>
+                <?php foreach ($all_subcategorias as $sub): ?>
+                  <option value="<?= $sub['id_subcategoria'] ?>"><?= htmlspecialchars($sub['valor']) . ' (' . htmlspecialchars($sub['nombre_tipo']) . ')' ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
             <div class="form-control">

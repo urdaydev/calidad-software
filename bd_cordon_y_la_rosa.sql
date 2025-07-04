@@ -45,6 +45,9 @@ DROP TABLE IF EXISTS `departamento`;
 DROP TABLE IF EXISTS `metodopago`;
 DROP TABLE IF EXISTS `tienda`;
 DROP TABLE IF EXISTS `tipoacceso`;
+DROP TABLE IF EXISTS `producto_subcategoria`;
+DROP TABLE IF EXISTS `subcategoria`;
+DROP TABLE IF EXISTS `subcategoria_tipo`;
 
 -- Reactivar la verificación de claves foráneas
 SET FOREIGN_KEY_CHECKS=1;
@@ -368,8 +371,8 @@ INSERT INTO `producto` (`id_producto`, `id_categoria`, `id_proveedor`, `id_marca
 (29, 10, 10, NULL, 'Gloria leche evaporada', 'images/productos/29.jpg', 'Leche 400 g', 4.60, 30, 5, '2025-07-19', '2023-11-30 18:30:43', 0x31),
 (30, 10, 10, NULL, 'Gloria sin lactosa', 'images/productos/30.jpg', 'Leche 400g', 5.00, 30, 5, '2025-07-25', '2023-11-30 18:32:44', 0x31),
 (31, 10, 10, NULL, 'Mantequilla', 'images/productos/31.jpg', 'Mantequilla Gloria en pote de 390g', 16.00, 30, 5, '2025-08-30', '2023-11-30 18:37:03', 0x31),
-(32, 10, 10, NULL, 'Yogurt Gloria', 'images/productos/32.jpg', 'Botella de 1L', 6.00, 30, 5, '2025-07-10', '2023-11-30 18:39:11', 0x31),
-(33, 10, 10, NULL, 'Yogurt', 'images/productos/33.jpg', 'Sin lactosa sabor fresa 1L', 7.20, 30, 5, '2025-07-15', '2023-11-30 21:01:23', 0x31),
+(32, 10, 10, NULL, 'Yogurt Gloria', 'images/productos/32.jpg', 'Botella de 1L', 6.00, 30, 5, '2025-07-10', '2023-11-30 21:01:23', 0x31),
+(33, 10, 10, NULL, 'Yogurt', 'images/productos/33.jpg', 'Sin lactosa sabor fresa 1L', 7.20, 30, 5, '2025-07-15', '2023-11-30 21:04:28', 0x31),
 (34, 10, 10, NULL, 'Queso Mozzarella', 'images/productos/34.jpg', 'Bonle 250g', 12.90, 30, 5, '2025-07-22', '2023-11-30 21:04:28', 0x31),
 (35, 12, 7, NULL, 'Lavavajilla ', 'images/productos/35.jpg', 'Ayudin lima limon liquido botella 1.2 L', 23.00, 30, 5, '2026-11-30', '2023-11-30 21:24:42', 0x31),
 (36, 12, 7, NULL, 'Clorox', 'images/productos/36.jpg', 'Lejia para ropa blanca 324 ml', 1.50, 30, 5, '2026-11-30', '2023-11-30 21:28:47', 0x31),
@@ -853,3 +856,172 @@ ALTER TABLE `empresa`
 --
 ALTER TABLE `factura`
   ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`);
+
+--
+-- Filtros para la tabla `venta`
+--
+ALTER TABLE `venta`
+  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_metodo_pago`) REFERENCES `metodopago` (`id_metodo_pago`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `producto_subcategoria`
+--
+ALTER TABLE `producto_subcategoria`
+  ADD CONSTRAINT `producto_subcategoria_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `producto_subcategoria_ibfk_2` FOREIGN KEY (`id_subcategoria`) REFERENCES `subcategoria` (`id_subcategoria`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  ADD CONSTRAINT `subcategoria_ibfk_1` FOREIGN KEY (`id_subcategoria_tipo`) REFERENCES `subcategoria_tipo` (`id_subcategoria_tipo`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+--
+-- --------------------------------------------------------
+--
+-- SUBCATEGORIAS
+--
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `subcategoria_tipo`
+--
+
+CREATE TABLE `subcategoria_tipo` (
+  `id_subcategoria_tipo` int(11) NOT NULL,
+  `nombre_tipo` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `subcategoria_tipo`
+--
+
+INSERT INTO `subcategoria_tipo` (`id_subcategoria_tipo`, `nombre_tipo`) VALUES
+(1, 'Tamaño'),
+(2, 'Lote'),
+(3, 'Tipo de Envase');
+
+--
+-- Estructura de tabla para la tabla `subcategoria`
+--
+
+CREATE TABLE `subcategoria` (
+  `id_subcategoria` int(11) NOT NULL,
+  `id_subcategoria_tipo` int(11) NOT NULL,
+  `valor` varchar(255) NOT NULL,
+  `estado` binary(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `subcategoria`
+--
+
+INSERT INTO `subcategoria` (`id_subcategoria`, `id_subcategoria_tipo`, `valor`, `estado`) VALUES
+(1, 1, '600 ml', 1),
+(2, 1, '1 Litro', 1),
+(3, 1, '1.5 Litros', 1),
+(4, 1, '3 Litros', 1),
+(5, 3, 'Botella de Plástico', 1),
+(6, 3, 'Lata', 1),
+(7, 3, 'Caja', 1),
+(8, 3, 'Bolsa', 1),
+(9, 2, 'LOTE-A01-2024', 1),
+(10, 2, 'LOTE-B02-2024', 1),
+(11, 1, '45g', 1),
+(12, 1, '190g', 1),
+(13, 1, '30g', 1),
+(14, 1, '250g', 1),
+(15, 1, '395g', 1),
+(16, 1, '400g', 1),
+(17, 1, '330g', 1),
+(18, 1, '3kg', 1);
+
+--
+-- Estructura de tabla para la tabla `producto_subcategoria`
+--
+
+CREATE TABLE `producto_subcategoria` (
+  `id_producto` int(11) NOT NULL,
+  `id_subcategoria` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `producto_subcategoria`
+--
+
+INSERT INTO `producto_subcategoria` (`id_producto`, `id_subcategoria`) VALUES
+(13, 1), -- Inka Kola, 600 ml
+(13, 5), -- Inka Kola, Botella de Plástico
+(13, 9), -- Inka Kola, Lote
+(14, 1), -- Coca cola, 600 ml
+(14, 5), -- Coca cola, Botella de Plástico
+(14, 9), -- Coca cola, Lote
+(16, 2), -- Agua Cielo, 1 Litro
+(16, 5), -- Agua Cielo, Botella de Plástico
+(17, 3), -- Frugos Valle, 1.5 Litros
+(17, 7), -- Frugos Valle, Caja
+(21, 11), -- Doritos, 45g
+(21, 8), -- Doritos, Bolsa
+(28, 6), -- Gloria, Lata
+(28, 15), -- Gloria, 395g
+(42, 18), -- Ricocat, 3kg
+(42, 8);  -- Ricocat, Bolsa
+
+--
+-- Indices de la tabla `subcategoria_tipo`
+--
+ALTER TABLE `subcategoria_tipo`
+  ADD PRIMARY KEY (`id_subcategoria_tipo`);
+
+--
+-- Indices de la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  ADD PRIMARY KEY (`id_subcategoria`),
+  ADD KEY `id_subcategoria_tipo` (`id_subcategoria_tipo`);
+
+--
+-- Indices de la tabla `producto_subcategoria`
+--
+ALTER TABLE `producto_subcategoria`
+  ADD PRIMARY KEY (`id_producto`,`id_subcategoria`),
+  ADD KEY `id_subcategoria` (`id_subcategoria`);
+
+--
+-- AUTO_INCREMENT de la tabla `subcategoria_tipo`
+--
+ALTER TABLE `subcategoria_tipo`
+  MODIFY `id_subcategoria_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  MODIFY `id_subcategoria` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Filtros para la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  ADD CONSTRAINT `subcategoria_ibfk_1` FOREIGN KEY (`id_subcategoria_tipo`) REFERENCES `subcategoria_tipo` (`id_subcategoria_tipo`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `producto_subcategoria`
+--
+ALTER TABLE `producto_subcategoria`
+  ADD CONSTRAINT `producto_subcategoria_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `producto_subcategoria_ibfk_2` FOREIGN KEY (`id_subcategoria`) REFERENCES `subcategoria` (`id_subcategoria`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

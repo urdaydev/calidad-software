@@ -304,21 +304,23 @@ btn_register_sale.addEventListener("click", () => {
   // Obtener el dni
   const dni = document.querySelector("#dni-cliente").value;
   // Obtener el nombre del cliente
-  const cliente_text = document.querySelector('.content-cart__client').outerText;
+  const cliente_text = document.querySelector(
+    ".content-cart__client"
+  ).outerText;
 
-  if(dni == ''){
+  if (dni == "") {
     Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Ingrese el DNI del cliente',
-    })
+      icon: "error",
+      title: "Oops...",
+      text: "Ingrese el DNI del cliente",
+    });
     return;
-  } else if(cliente_text == ''){
+  } else if (cliente_text == "") {
     Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'No se encontró el DNI, registre al cliente',
-    })
+      icon: "error",
+      title: "Oops...",
+      text: "No se encontró el DNI, registre al cliente",
+    });
     return;
   }
 
@@ -331,62 +333,74 @@ btn_register_sale.addEventListener("click", () => {
   };
   // Enviar los datos al servidor a traves del metodo POST
   const url = "../tickets/ticket.php";
-    fetch(url, {
-        method: "POST",
-        body: JSON.stringify(data),
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      console.log(response);
+      return response.json();
     })
-        .then((response) => {
-            console.log(response);
-            return response.json();
+    .then((data) => {
+      const rutaPdf = "../tickets/" + data["path"];
+      // Mensaje de éxito, un boton para descargar el pdf y otro para cancelar
+      // El boton de cancelar debe cerrar el modal
+      Swal.fire({
+        icon: "success",
+        title: "Venta registrada",
+        text: "¿Desea descargar el ticket?",
+        showCancelButton: true,
+        confirmButtonText: `Descargar`,
+        cancelButtonText: `Cancelar`,
+      })
+        .then((result) => {
+          result.isConfirmed && window.open(rutaPdf);
+          // Si el usuario da click en cancelar, el modal se cierra
+          result.isDismissed && Swal.close();
+          if (!result.isDismissed) {
+            // Limpiar el carrito
+            ShoppingCart.cleanCart();
+            // Ocultar el total
+            const contentCartTotal = document.querySelector(
+              ".content-cart__total"
+            );
+            contentCartTotal.classList.add("inactive");
+            // Ocultar el boton de registrar venta
+            btn_register_sale.classList.add("inactive");
+            // Ocultar el icono de carrito vacio
+            const icon_empty_card = document.querySelector(".icon-empty_card");
+            icon_empty_card.classList.remove("inactive");
+            // Ocultar el texto de carrito vacio
+            const empty_text = document.querySelector(".empty-card_text");
+            empty_text.classList.remove("inactive");
+            // Ocultar el input de dni
+            const dni_container_text = document.querySelector(
+              ".dni-container-text"
+            );
+            dni_container_text.classList.add("inactive");
+            // Ocultar el input de dni
+            const content_input_container = document.querySelector(
+              ".content-cart__input-container"
+            );
+            content_input_container.classList.add("inactive");
+            // Ocultar el numero de productos
+            const quantity_products =
+              document.querySelector(".quantity-products");
+            quantity_products.innerHTML = "";
+            // Ocultar los productos
+            const content_card = document.querySelector(
+              ".content-cart__products"
+            );
+            content_card.innerHTML = "";
+            // Ocultar el nombre del cliente
+            const content_cart_client = document.querySelector(
+              ".content-cart__client"
+            );
+            content_cart_client.innerHTML = "";
+          }
         })
-        .then((data) => {
-            const rutaPdf = '../tickets/' + data['path'];
-            // Mensaje de éxito, un boton para descargar el pdf y otro para cancelar
-            // El boton de cancelar debe cerrar el modal
-            Swal.fire({
-                icon: 'success',
-                title: 'Venta registrada',
-                text: '¿Desea descargar el ticket?',
-                showCancelButton: true,
-                confirmButtonText: `Descargar`,
-                cancelButtonText: `Cancelar`,
-            }).then((result) => {
-                result.isConfirmed && window.open(rutaPdf);
-                // Si el usuario da click en cancelar, el modal se cierra
-                result.isDismissed && Swal.close();
-               if(!result.isDismissed){
-                 // Limpiar el carrito
-                 ShoppingCart.cleanCart();
-                 // Ocultar el total
-                 const contentCartTotal = document.querySelector('.content-cart__total');
-                 contentCartTotal.classList.add('inactive');
-                 // Ocultar el boton de registrar venta
-                 btn_register_sale.classList.add('inactive');
-                 // Ocultar el icono de carrito vacio
-                 const icon_empty_card = document.querySelector('.icon-empty_card');
-                 icon_empty_card.classList.remove('inactive');
-                 // Ocultar el texto de carrito vacio
-                 const empty_text = document.querySelector('.empty-card_text');
-                 empty_text.classList.remove('inactive');
-                 // Ocultar el input de dni
-                 const dni_container_text = document.querySelector('.dni-container-text');
-                 dni_container_text.classList.add('inactive');
-                 // Ocultar el input de dni
-                 const content_input_container = document.querySelector('.content-cart__input-container');
-                 content_input_container.classList.add('inactive');
-                 // Ocultar el numero de productos
-                 const quantity_products = document.querySelector('.quantity-products');
-                 quantity_products.innerHTML = '';
-                 // Ocultar los productos
-                 const content_card = document.querySelector('.content-cart__products');
-                 content_card.innerHTML = '';
-                 // Ocultar el nombre del cliente
-                 const content_cart_client = document.querySelector('.content-cart__client');
-                 content_cart_client.innerHTML = '';
-               }
-            })
         .catch((error) => {
-        console.log(error);
+          console.log(error);
         });
-    })
+    });
 });

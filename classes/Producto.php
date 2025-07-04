@@ -2,13 +2,17 @@
 
 namespace App\Classes;
 
+require_once 'Subcategoria.php';
+
 class Producto
 {
   private $con;
+  private $subcategoriaManager;
 
   public function __construct($conexion)
   {
     $this->con = $conexion;
+    $this->subcategoriaManager = new Subcategoria($conexion);
   }
 
   public function listarProductosActivos()
@@ -34,15 +38,19 @@ class Producto
 
     $productos = array();
     while ($row = $result->fetch_assoc()) {
+      $id_producto = (int)$row['id_producto'];
+      $subcategorias = $this->subcategoriaManager->obtenerSubcategoriasDeProducto($id_producto);
+
       $productos[] = array(
-        'id' => (int)$row['id_producto'],
+        'id' => $id_producto,
         'categoria_id' => (int)$row['id_categoria'],
         'categoria_nombre' => $row['nom_categoria'],
         'nombre' => $row['nom_producto'],
         'imagen' => $row['imagen'],
         'descripcion' => $row['descripcion'],
         'precio' => (float)$row['precio'],
-        'fecha_vencimiento' => $row['fecha_vencimiento']
+        'fecha_vencimiento' => $row['fecha_vencimiento'],
+        'subcategorias' => $subcategorias
       );
     }
 
@@ -66,8 +74,11 @@ class Producto
     }
 
     $row = $result->fetch_assoc();
+    $id_producto = (int)$row['id_producto'];
+    $subcategorias = $this->subcategoriaManager->obtenerSubcategoriasDeProducto($id_producto);
+
     return array(
-      'id' => (int)$row['id_producto'],
+      'id' => $id_producto,
       'proveedor_id' => (int)$row['id_proveedor'],
       'categoria_id' => (int)$row['id_categoria'],
       'marca_id' => (int)$row['id_marca'],
@@ -79,7 +90,8 @@ class Producto
       'stock_minimo' => (int)$row['stock_minimo'],
       'fecha_registro' => $row['fecha_registro'],
       'fecha_vencimiento' => $row['fecha_vencimiento'],
-      'estado' => (bool)$row['estado']
+      'estado' => (bool)$row['estado'],
+      'subcategorias' => $subcategorias
     );
   }
 
@@ -101,8 +113,11 @@ class Producto
 
     $productos = array();
     while ($row = $result->fetch_assoc()) {
+      $id_producto = (int)$row['id_producto'];
+      $subcategorias = $this->subcategoriaManager->obtenerSubcategoriasDeProducto($id_producto);
+
       $productos[] = array(
-        'id' => (int)$row['id_producto'],
+        'id' => $id_producto,
         'proveedor_id' => (int)$row['id_proveedor'],
         'categoria_id' => (int)$row['id_categoria'],
         'marca_id' => (int)$row['id_marca'],
@@ -114,7 +129,8 @@ class Producto
         'stock_minimo' => (int)$row['stock_minimo'],
         'fecha_registro' => $row['fecha_registro'],
         'fecha_vencimiento' => $row['fecha_vencimiento'],
-        'estado' => (bool)$row['estado']
+        'estado' => (bool)$row['estado'],
+        'subcategorias' => $subcategorias
       );
     }
 

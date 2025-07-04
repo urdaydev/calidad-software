@@ -1,190 +1,83 @@
 <?php
-// Api de productos
-include_once '../../config/db.php';
-include_once '../../config/conexion.php';
+header('Content-Type: application/json');
 
-// Obtener los datos para la actualización
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+require_once('../../config/db.php');
+require_once('../../config/conexion.php');
+require_once('../../classes/Producto.php');
+require_once('../../classes/Subcategoria.php');
 
-  $id_producto = $_POST['id_producto'];
-  $id_proveedor = $_POST['id_proveedor'];
-  $id_categoria = $_POST['id_categoria'];
-  $nom_producto = $_POST['nom_producto'];
-  $descripcion = $_POST['descripcion'];
-  $precio = $_POST['precio'];
-  $stock = $_POST['stock'];
-  $stock_minimo = $_POST['stock_minimo'];
+$productoManager = new App\Classes\Producto($con);
+$subcategoriaManager = new App\Classes\Subcategoria($con);
+$response = ['success' => false, 'message' => 'Invalid Request'];
+$method = $_SERVER['REQUEST_METHOD'];
+
+// Obtener datos de un producto para el modal de edición
+if ($method === 'GET' && isset($_GET['id'])) {
+  $id = (int)$_GET['id'];
+  $producto = $productoManager->buscarProductoPorId($id);
+  if ($producto) {
+    // Las subcategorías ya están incluidas por el método buscarProductoPorId
+    echo json_encode($producto);
+    exit;
+  } else {
+    $response['message'] = 'Producto no encontrado';
+  }
+}
+
+// Actualizar un producto
+if ($method === 'POST' && isset($_POST['id_producto'])) {
+  $id_producto = (int)$_POST['id_producto'];
+  $id_proveedor = (int)$_POST['id_proveedor'];
+  $id_categoria = (int)$_POST['id_categoria'];
+  $nom_producto = mysqli_real_escape_string($con, $_POST['nom_producto']);
+  $descripcion = mysqli_real_escape_string($con, $_POST['descripcion']);
+  $precio = (float)$_POST['precio'];
+  $stock = (int)$_POST['stock'];
+  $stock_minimo = (int)$_POST['stock_minimo'];
   $fecha_vencimiento = $_POST['fecha_vencimiento'];
+  $subcategorias = $_POST['subcategorias'] ?? [];
 
-  $id_producto = removeQuotes($id_producto);
-  $id_proveedor = removeQuotes($id_proveedor);
-  $id_categoria = removeQuotes($id_categoria);
-  $nom_producto = removeQuotes($nom_producto);
-  $descripcion = removeQuotes($descripcion);
-  $precio = removeQuotes($precio);
-  $stock = removeQuotes($stock);
-  $stock_minimo = removeQuotes($stock_minimo);
-  $fecha_vencimiento = removeQuotes($fecha_vencimiento);
+  $sql = "UPDATE producto SET 
+                id_proveedor = ?, 
+                id_categoria = ?, 
+                nom_producto = ?, 
+                descripcion = ?, 
+                precio = ?, 
+                stock = ?, 
+                stock_minimo = ?, 
+                fecha_vencimiento = ? 
+            WHERE id_producto = ?";
 
-  // Validar los datos
-  if (!isset($id_producto, $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento)) {
-    // Cambiar el código de respuesta
-    http_response_code(400); // Bad Request
-    // Enviar respuesta JSON
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Parámetros incompletos']);
-    exit;
-  }
-  // Verificar si existe el producto
-  $sql = "SELECT * FROM producto WHERE id_producto = ?";
   $stmt = $con->prepare($sql);
-  $stmt->bind_param("i", $id_producto);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  if ($result->num_rows === 0) {
-    // Producto no existe
-    http_response_code(404); // Not Found
-    // Enviar respuesta JSON
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Producto no encontrado']);
-    exit;
-  } // Verificar si envio el archivo imagen que es opcional
-  // Valido si envio la imagen
-  if (isset($_FILES['imagen'])) {
-    // Obtengo la imagen
-    $imagen = $_FILES['imagen'];
-    // Reemplazo la imagen anterior con la nueva
-    $dir_imagen_prev = "../../images/productos/$id_producto.jpg";
-    if (file_exists($dir_imagen_prev)) {
-      unlink($dir_imagen_prev);
-    }
-    // Guardo la nueva imagen
-    move_uploaded_file($imagen['tmp_name'], "../../images/productos/$id_producto.jpg");
-    // Actualizamos la ruta de la imagen en la base de datos
-    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, fecha_vencimiento = ? WHERE id_producto = ?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("iisssiisi", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento, $id_producto);
-  }
-  // Si no envio la imagen
-  else if (!isset($_FILES['imagen'])) {
-    // Actualizar la categoría
-    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, fecha_vencimiento = ? WHERE id_producto = ?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("iisssiisi", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento, $id_producto);
-  }
+  $stmt->bind_param("iissdisss", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento, $id_producto);
+
   if ($stmt->execute()) {
-    // La consulta se ejecutó correctamente
-    // Cambiar el código de respuesta
-    http_response_code(200); // OK
-    // Enviar respuesta JSON
-    header('Content-Type: application/json');
-    echo json_encode(['success' => 'Producto actualizado correctamente']);
-  } else {
-    // La consulta falló
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Error al ejecutar la consulta']);
-    exit;
-  }
-  $stmt->close();
-} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  // Obtener datos para mostrar
-  if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    $sql = "SELECT * FROM producto WHERE id_producto = ?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-
-      // id_producto INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      // -- Llave foranea
-      // id_categoria INT NOT NULL,
-      // id_proveedor INT,
-      // id_marca INT,
-      // -- Atributos
-      // nom_producto VARCHAR(50) NOT NULL,
-      // imagen VARCHAR(250) NOT NULL,
-      // descripcion VARCHAR(250) NOT NULL,
-      // precio DECIMAL(6,2) NOT NULL,
-      // stock INT NOT NULL,
-      // fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-      // estado BINARY NOT NULL DEFAULT 1,
-
-      $row = $result->fetch_assoc();
-      $id_proveedor = $row['id_proveedor'];
-      $id_categoria = $row['id_categoria'];
-      $id_marca = $row['id_marca'];
-      $nom_producto = $row['nom_producto'];
-      $imagen = $row['imagen'];
-      $descripcion = $row['descripcion'];
-      $precio = $row['precio'];
-      $stock = $row['stock'];
-      $stock_minimo = $row['stock_minimo'];
-      $fecha_registro = $row['fecha_registro'];
-      $fecha_vencimiento = $row['fecha_vencimiento'];
-      $estado = $row['estado'];
-
-      // Enviar respuesta JSON
-      header('Content-Type: application/json');
-      echo json_encode([
-        'id_producto' => $id,
-        'id_proveedor' => $id_proveedor,
-        'id_categoria' => $id_categoria,
-        'id_marca' => $id_marca,
-        'nom_producto' => $nom_producto,
-        'imagen' => $imagen,
-        'descripcion' => $descripcion,
-        'precio' => $precio,
-        'stock' => $stock,
-        'stock_minimo' => $stock_minimo,
-        'fecha_registro' => $fecha_registro,
-        'fecha_vencimiento' => $fecha_vencimiento,
-        'estado' => $estado
-      ]);
-    } else {
-      // Categoría no encontrada
-      http_response_code(404); // Not Found
-      header('Content-Type: application/json');
-      echo json_encode(['error' => 'Producto no encontrado']);
+    // Manejo de imagen
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+      $ruta_imagen = "../../images/productos/$id_producto.jpg";
+      move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_imagen);
+      $imagen_db = "images/productos/$id_producto.jpg";
+      $sql_update_img = "UPDATE producto SET imagen = ? WHERE id_producto = ?";
+      $stmt_img = $con->prepare($sql_update_img);
+      $stmt_img->bind_param("si", $imagen_db, $id_producto);
+      $stmt_img->execute();
     }
 
-    $stmt->close();
-  } else if (isset($_GET['all'])) {
-    // Obtener todas los productos, y devolver un JSON con todos los productos
-    $sql = "SELECT 
-        producto.id_producto,
-        categoria.id_categoria,
-        categoria.nom_categoria,
-        producto.nom_producto,
-        producto.imagen,
-        producto.descripcion,
-        producto.precio 
-        FROM producto inner join categoria on producto.id_categoria = categoria.id_categoria
-        WHERE producto.estado = 1";
-    $result = $con->query($sql);
-    // Obtener los datos de la tabla y guardarlos en un array
-    $productos = [];
-    while ($row = $result->fetch_assoc()) {
-      $productos[] = $row;
+    // Actualizar subcategorías
+    $subcategoriaManager->desasignarTodasSubcategoriasDeProducto($id_producto);
+    if (!empty($subcategorias) && is_array($subcategorias)) {
+      foreach ($subcategorias as $id_subcategoria) {
+        $subcategoriaManager->asignarSubcategoriaAProducto($id_producto, (int)$id_subcategoria);
+      }
     }
-    // Enviar respuesta JSON
-    header('Content-Type: application/json');
-    echo json_encode($productos);
+
+    $response = ['success' => true];
   } else {
-    // Enviar un bad request
-    http_response_code(400); // Bad Request
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Bad Request']);
+    $response['message'] = "Error al actualizar el producto: " . $stmt->error;
   }
-}
-function removeQuotes($string)
-{
-  $string = str_replace("'", "", $string);
-  $string = str_replace('"', '', $string);
-  return $string;
+} else {
+  // Si no es GET con id ni POST con id_producto, puede ser otra operación
+  // o un error. Se mantiene la respuesta por defecto.
 }
 
-$con->close();
+echo json_encode($response);

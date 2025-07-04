@@ -24,6 +24,7 @@ btnEditModal.forEach((btn) => {
           stock,
           stock_minimo,
           fecha_vencimiento,
+          subcategorias,
         } = data;
         function setSelectedOption(
           selector,
@@ -43,6 +44,17 @@ btnEditModal.forEach((btn) => {
         // Uso de la función
         setSelectedOption("categoria", idCategoria);
         setSelectedOption("proveedor", idProveedor);
+
+        // Pre-seleccionar subcategorías
+        const subcategoriasSelect = document.querySelector(
+          ".modalUpdate #update_subcategorias"
+        );
+        const subcategoriasOptions = subcategoriasSelect.options;
+        for (let i = 0; i < subcategoriasOptions.length; i++) {
+          subcategoriasOptions[i].selected = subcategorias.some(
+            (sub) => sub.id_subcategoria == subcategoriasOptions[i].value
+          );
+        }
 
         const nombreInput = document.querySelector(".modalUpdate #nombre");
         const descripcionInput = document.querySelector(
@@ -81,6 +93,15 @@ btn_update.addEventListener("click", () => {
   const fechaVencimiento = document.querySelector(
     ".modalUpdate #fecha_vencimiento"
   ).value;
+
+  // Obtener subcategorías seleccionadas
+  const subcategoriasSelect = document.querySelector(
+    ".modalUpdate #update_subcategorias"
+  );
+  const selectedSubcategorias = Array.from(
+    subcategoriasSelect.selectedOptions
+  ).map((option) => option.value);
+
   // input de tipo file
   const imagen = document.querySelector(".modalUpdate #imagen").files[0];
   console.log(imagen);
@@ -96,6 +117,11 @@ btn_update.addEventListener("click", () => {
   formData.append("stock", stock);
   formData.append("stock_minimo", stockMinimo);
   formData.append("fecha_vencimiento", fechaVencimiento);
+
+  // Adjuntar subcategorías al FormData
+  selectedSubcategorias.forEach((subId) => {
+    formData.append("subcategorias[]", subId);
+  });
 
   fetch("../views/apis/producto.php", {
     method: "POST",
