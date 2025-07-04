@@ -33,6 +33,66 @@ $items_nav = getItemsNav($items_nav, 'productos');
   <!----===== Boxicons CSS ===== -->
   <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
   <style>
+    .filter-date-range {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 1rem;
+      margin-top: 20px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .filter-date-range label {
+      font-size: 0.9em;
+      color: var(--text-color);
+    }
+
+    .filter-date-range input[type="date"] {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 5px 8px;
+      background-color: var(--sidebar-color);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+    }
+
+    .filter-date-range input[type="date"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    #btn-filtrar,
+    #btn-limpiar-filtro {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #btn-filtrar {
+      background-color: #0d6efd;
+    }
+
+    #btn-filtrar:hover {
+      background-color: #0b5ed7;
+    }
+
+    #btn-limpiar-filtro {
+      background-color: #dc3545;
+    }
+
+    #btn-limpiar-filtro:hover {
+      background-color: #bb2d3b;
+    }
+
     .stock-alert-container {
       display: flex;
       align-items: center;
@@ -217,6 +277,18 @@ $items_nav = getItemsNav($items_nav, 'productos');
             <span class="bx bx-search"></span>
             <input type="text" placeholder="Buscar..." id="search-rows">
           </div>
+          <div class="filter-date-range">
+            <div class="filter-group">
+              <label for="fecha_vencimiento_desde">Desde:</label>
+              <input type="date" id="fecha_vencimiento_desde">
+            </div>
+            <div class="filter-group">
+              <label for="fecha_vencimiento_hasta">Hasta:</label>
+              <input type="date" id="fecha_vencimiento_hasta">
+            </div>
+            <button id="btn-filtrar">Filtrar</button>
+            <button id="btn-limpiar-filtro" style="display: none;">Limpiar</button>
+          </div>
           <div class="btn-container">
             <a class="btn btn-add">
               <span class="text">
@@ -262,7 +334,14 @@ $items_nav = getItemsNav($items_nav, 'productos');
                     </div>
                   </td>
                   <td><?= $row['stock_minimo'] ?></td>
-                  <td><?= $row['fecha_vencimiento'] ?></td>
+                  <?php
+                  $fecha_vencimiento = $row['fecha_vencimiento'];
+                  $fecha_formateada = 'N/A';
+                  if ($fecha_vencimiento) {
+                    $fecha_formateada = date('m/d/Y', strtotime($fecha_vencimiento));
+                  }
+                  ?>
+                  <td data-date="<?= $fecha_vencimiento ?>"><?= $fecha_formateada ?></td>
                   <td><img src="<?= "../" . $row['imagen'] ?>" alt="" width="100px"></td>
                   <td>
                     <a class="producto-update btn-edit">
@@ -472,5 +551,6 @@ $items_nav = getItemsNav($items_nav, 'productos');
 <script src="../modal-js/delete-product-modal.js"></script>
 <script src="../modal-js/data_productos.js"></script>
 <script src="../js/search_rows.js"></script>
+<script src="../js/filter_products.js"></script>
 
 </html>
