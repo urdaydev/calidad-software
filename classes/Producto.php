@@ -20,7 +20,8 @@ class Producto
             producto.nom_producto,
             producto.imagen,
             producto.descripcion,
-            producto.precio 
+            producto.precio,
+            producto.fecha_vencimiento
             FROM producto 
             INNER JOIN categoria ON producto.id_categoria = categoria.id_categoria
             WHERE producto.estado = 1";
@@ -40,7 +41,8 @@ class Producto
         'nombre' => $row['nom_producto'],
         'imagen' => $row['imagen'],
         'descripcion' => $row['descripcion'],
-        'precio' => (float)$row['precio']
+        'precio' => (float)$row['precio'],
+        'fecha_vencimiento' => $row['fecha_vencimiento']
       );
     }
 
@@ -76,7 +78,46 @@ class Producto
       'stock' => (int)$row['stock'],
       'stock_minimo' => (int)$row['stock_minimo'],
       'fecha_registro' => $row['fecha_registro'],
+      'fecha_vencimiento' => $row['fecha_vencimiento'],
       'estado' => (bool)$row['estado']
     );
+  }
+
+  public function listarProductosProximosAVencer($dias)
+  {
+    if (!is_numeric($dias) || $dias <= 0) {
+      return [];
+    }
+
+    $sql = "SELECT * FROM producto WHERE estado = 1 AND fecha_vencimiento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL ? DAY)";
+    $stmt = $this->con->prepare($sql);
+    $stmt->bind_param("i", $dias);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if (!$result) {
+      return [];
+    }
+
+    $productos = array();
+    while ($row = $result->fetch_assoc()) {
+      $productos[] = array(
+        'id' => (int)$row['id_producto'],
+        'proveedor_id' => (int)$row['id_proveedor'],
+        'categoria_id' => (int)$row['id_categoria'],
+        'marca_id' => (int)$row['id_marca'],
+        'nombre' => $row['nom_producto'],
+        'imagen' => $row['imagen'],
+        'descripcion' => $row['descripcion'],
+        'precio' => (float)$row['precio'],
+        'stock' => (int)$row['stock'],
+        'stock_minimo' => (int)$row['stock_minimo'],
+        'fecha_registro' => $row['fecha_registro'],
+        'fecha_vencimiento' => $row['fecha_vencimiento'],
+        'estado' => (bool)$row['estado']
+      );
+    }
+
+    return $productos;
   }
 }

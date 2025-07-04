@@ -23,6 +23,7 @@ btnEditModal.forEach((btn) => {
           precio,
           stock,
           stock_minimo,
+          fecha_vencimiento,
         } = data;
         function setSelectedOption(
           selector,
@@ -52,11 +53,15 @@ btnEditModal.forEach((btn) => {
         const stockMinimoInput = document.querySelector(
           ".modalUpdate #stock_minimo"
         );
+        const fechaVencimientoInput = document.querySelector(
+          ".modalUpdate #fecha_vencimiento"
+        );
         nombreInput.value = nombre;
         descripcionInput.value = descripcion;
         precioInput.value = precio;
         stockInput.value = stock;
         stockMinimoInput.value = stock_minimo;
+        fechaVencimientoInput.value = fecha_vencimiento;
       });
   });
 });
@@ -73,6 +78,9 @@ btn_update.addEventListener("click", () => {
   ).value;
   const idProveedor = document.querySelector(".modalUpdate #proveedor").value;
   const idCategoria = document.querySelector(".modalUpdate #categoria").value;
+  const fechaVencimiento = document.querySelector(
+    ".modalUpdate #fecha_vencimiento"
+  ).value;
   // input de tipo file
   const imagen = document.querySelector(".modalUpdate #imagen").files[0];
   console.log(imagen);
@@ -87,6 +95,7 @@ btn_update.addEventListener("click", () => {
   formData.append("precio", precio);
   formData.append("stock", stock);
   formData.append("stock_minimo", stockMinimo);
+  formData.append("fecha_vencimiento", fechaVencimiento);
 
   fetch("../views/apis/producto.php", {
     method: "POST",

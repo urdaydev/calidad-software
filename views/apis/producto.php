@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $precio = $_POST['precio'];
   $stock = $_POST['stock'];
   $stock_minimo = $_POST['stock_minimo'];
+  $fecha_vencimiento = $_POST['fecha_vencimiento'];
 
   $id_producto = removeQuotes($id_producto);
   $id_proveedor = removeQuotes($id_proveedor);
@@ -23,9 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $precio = removeQuotes($precio);
   $stock = removeQuotes($stock);
   $stock_minimo = removeQuotes($stock_minimo);
+  $fecha_vencimiento = removeQuotes($fecha_vencimiento);
 
   // Validar los datos
-  if (!isset($id_producto, $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo)) {
+  if (!isset($id_producto, $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento)) {
     // Cambiar el código de respuesta
     http_response_code(400); // Bad Request
     // Enviar respuesta JSON
@@ -59,16 +61,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Guardo la nueva imagen
     move_uploaded_file($imagen['tmp_name'], "../../images/productos/$id_producto.jpg");
     // Actualizamos la ruta de la imagen en la base de datos
-    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ? WHERE id_producto = ?";
+    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, fecha_vencimiento = ? WHERE id_producto = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("iisssiis", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $id_producto);
+    $stmt->bind_param("iisssiisi", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento, $id_producto);
   }
   // Si no envio la imagen
   else if (!isset($_FILES['imagen'])) {
     // Actualizar la categoría
-    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ? WHERE id_producto = ?";
+    $sql = "UPDATE producto SET id_proveedor = ?, id_categoria = ?, nom_producto = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ?, fecha_vencimiento = ? WHERE id_producto = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("iisssiis", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $id_producto);
+    $stmt->bind_param("iisssiisi", $id_proveedor, $id_categoria, $nom_producto, $descripcion, $precio, $stock, $stock_minimo, $fecha_vencimiento, $id_producto);
   }
   if ($stmt->execute()) {
     // La consulta se ejecutó correctamente
@@ -122,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $stock = $row['stock'];
       $stock_minimo = $row['stock_minimo'];
       $fecha_registro = $row['fecha_registro'];
+      $fecha_vencimiento = $row['fecha_vencimiento'];
       $estado = $row['estado'];
 
       // Enviar respuesta JSON
@@ -138,6 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'stock' => $stock,
         'stock_minimo' => $stock_minimo,
         'fecha_registro' => $fecha_registro,
+        'fecha_vencimiento' => $fecha_vencimiento,
         'estado' => $estado
       ]);
     } else {

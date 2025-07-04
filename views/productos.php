@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_login_status']) and $_SESSION['user_login_status'] !=
 require_once("../config/db.php"); //Contiene las variables de configuracion para conectar a la base de datos
 require_once("../config/conexion.php"); //Contiene funcion que conecta a la base de datos
 require_once("../utils/functions.php");
-$sql = " SELECT producto.id_producto, categoria.nom_categoria, producto.nom_producto, producto.descripcion, producto.precio, producto.stock, producto.stock_minimo, producto.imagen FROM producto inner join categoria on producto.id_categoria = categoria.id_categoria WHERE producto.estado = 1 ORDER BY producto.id_producto DESC;";
+$sql = " SELECT producto.id_producto, categoria.nom_categoria, producto.nom_producto, producto.descripcion, producto.precio, producto.stock, producto.stock_minimo, producto.imagen, producto.fecha_vencimiento FROM producto inner join categoria on producto.id_categoria = categoria.id_categoria WHERE producto.estado = 1 ORDER BY producto.id_producto DESC;";
 $query = mysqli_query($con, $sql);
 $id_usuario = $_SESSION['id_usuario'];
 $nombre_tienda = getData($con, "SELECT nom_tienda FROM Tienda;", 'nom_tienda');
@@ -237,6 +237,7 @@ $items_nav = getItemsNav($items_nav, 'productos');
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Stock Mínimo</th>
+                <th>Fecha de Vencimiento</th>
                 <th>Imagen</th>
                 <th></th>
                 <th></th>
@@ -261,6 +262,7 @@ $items_nav = getItemsNav($items_nav, 'productos');
                     </div>
                   </td>
                   <td><?= $row['stock_minimo'] ?></td>
+                  <td><?= $row['fecha_vencimiento'] ?></td>
                   <td><img src="<?= "../" . $row['imagen'] ?>" alt="" width="100px"></td>
                   <td>
                     <a class="producto-update btn-edit">
@@ -335,6 +337,10 @@ $items_nav = getItemsNav($items_nav, 'productos');
               <input type="number" min="0" placeholder="Stock mínimo del producto" required name="stock_minimo" id="stock_minimo">
             </div>
             <div class="form-control">
+              <label for="">Fecha de Vencimiento</label>
+              <input type="date" required name="fecha_vencimiento" id="fecha_vencimiento">
+            </div>
+            <div class="form-control">
               <label for="">Imagen</label>
               <input type="file" required name="imagen" id="imagen">
             </div>
@@ -399,6 +405,10 @@ $items_nav = getItemsNav($items_nav, 'productos');
             <div class="form-control">
               <label for="">Stock Mínimo</label>
               <input type="number" min="0" placeholder="Stock mínimo del producto" required name="stock_minimo" id="stock_minimo">
+            </div>
+            <div class="form-control">
+              <label for="">Fecha de Vencimiento</label>
+              <input type="date" required name="fecha_vencimiento" id="fecha_vencimiento">
             </div>
             <div class="form-control">
               <label for="">Imagen</label>
